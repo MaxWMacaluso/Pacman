@@ -1,4 +1,4 @@
 **Teammates:**
-	* Max Macaluso
-	* Rohan Suri
-	* Sahib Bajwa
+* Max Macaluso
+* Rohan Suri
+* Sahib Bajwa
