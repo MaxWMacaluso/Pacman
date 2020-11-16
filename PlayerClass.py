@@ -6,7 +6,7 @@
 
 import pygame
 
-from settings import *
+from constants import *
 vec = pygame.math.Vector2
 
 #Interesting note, theoretically, a SingletonPlayer instance would have no attributes (essentially null); however, static _instance is what is defined.
@@ -50,18 +50,13 @@ class SingletonPlayer:
         width = instanceSingleton.app.cell_width // 2 - 2
         pygame.draw.circle(surface, PLAYER_COLOUR, center, width)
 
-        #TODO:
-        # Drawing the grid pos rect
-        # pygame.draw.rect(instanceSingleton.app.screen, RED, (instanceSingleton.current_grid_pos[0]*instanceSingleton.app.cell_width+TOP_BOTTOM_BUFFER//2,
-        #                                         instanceSingleton.current_grid_pos[1]*instanceSingleton.app.cell_height+TOP_BOTTOM_BUFFER//2, instanceSingleton.app.cell_width, instanceSingleton.app.cell_height), 1)
-
     def drawLives(self):
         instanceSingleton = SingletonPlayer._instance
         surface = instanceSingleton.app.screen
         radius = 7
         #Repeats to number of num_lives
         for x in range(instanceSingleton.num_lives):
-            center = (30 + 20 * x, HEIGHT - 15)
+            center = (int(30 + 20 * x), int(WINDOW_HEIGHT - 15))
             pygame.draw.circle(surface, PLAYER_COLOUR, center, radius)
 
     def eatCoin(self):
@@ -128,13 +123,13 @@ class SingletonPlayer:
         if instanceSingleton.yFun():
             if instanceSingleton.direction == vec(0, 1) or instanceSingleton.direction == vec(0, -1) or instanceSingleton.direction == vec(0, 0):
                 return True
-        #TODO: maybe take out?
+        #TODO: may need to fix logic
         return False
 
     def getPixPos(self):
         instanceSingleton = SingletonPlayer._instance
-        x = (instanceSingleton.current_grid_pos[0] * instanceSingleton.app.cell_width) + TOP_BOTTOM_BUFFER // 2 + instanceSingleton.app.cell_width // 2
-        y = (instanceSingleton.current_grid_pos[1] * instanceSingleton.app.cell_height) + TOP_BOTTOM_BUFFER // 2 + instanceSingleton.app.cell_height // 2
+        x = (instanceSingleton.current_grid_pos[0] * instanceSingleton.app.cell_width) + TOP_BOTTOM_MARGIN // 2 + instanceSingleton.app.cell_width // 2
+        y = (instanceSingleton.current_grid_pos[1] * instanceSingleton.app.cell_height) + TOP_BOTTOM_MARGIN // 2 + instanceSingleton.app.cell_height // 2
         return (vec(x, y))
 
     #Uses direction and speed to set current_pix_pos
@@ -150,16 +145,16 @@ class SingletonPlayer:
 
     def pixPos_To_GridPos_X(self):
         instanceSingleton = SingletonPlayer._instance
-        instanceSingleton.current_grid_pos[0] = (instanceSingleton.current_pix_pos[0] - TOP_BOTTOM_BUFFER + instanceSingleton.app.cell_width // 2) // instanceSingleton.app.cell_width + 1
+        instanceSingleton.current_grid_pos[0] = (instanceSingleton.current_pix_pos[0] - TOP_BOTTOM_MARGIN + instanceSingleton.app.cell_width // 2) // instanceSingleton.app.cell_width + 1
 
     def pixPos_To_GridPos_Y(self):
         instanceSingleton = SingletonPlayer._instance
-        instanceSingleton.current_grid_pos[1] = (instanceSingleton.current_pix_pos[1] - TOP_BOTTOM_BUFFER + instanceSingleton.app.cell_height // 2) // instanceSingleton.app.cell_height + 1
+        instanceSingleton.current_grid_pos[1] = (instanceSingleton.current_pix_pos[1] - TOP_BOTTOM_MARGIN + instanceSingleton.app.cell_height // 2) // instanceSingleton.app.cell_height + 1
 
     #Returns a bool
     def xFun(self):
-        return (int(SingletonPlayer._instance.current_pix_pos.x + TOP_BOTTOM_BUFFER // 2) % SingletonPlayer._instance.app.cell_width == 0)
+        return (int(SingletonPlayer._instance.current_pix_pos.x + TOP_BOTTOM_MARGIN // 2) % SingletonPlayer._instance.app.cell_width == 0)
     
     #Returns a bool
     def yFun(self):
-        return (int(SingletonPlayer._instance.current_pix_pos.y + TOP_BOTTOM_BUFFER // 2) % SingletonPlayer._instance.app.cell_height == 0)
+        return (int(SingletonPlayer._instance.current_pix_pos.y + TOP_BOTTOM_MARGIN // 2) % SingletonPlayer._instance.app.cell_height == 0)
