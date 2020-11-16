@@ -1,8 +1,9 @@
 #Utilizes the Singleton Design Pattern
-#In creation of this file, referenced:
+#In creation of this file, REFERENCED:
     #https://python-patterns.guide/gang-of-four/singleton/
     #https://www.cse.wustl.edu/~garnett/cse511a/code/project2/pacman_py.html
     #https://github.com/a-plus-coding/pacman-with-python
+    #http://zetcode.com/javagames/pacman/
 
 import pygame
 
@@ -17,7 +18,7 @@ class SingletonPlayer:
 
     #Constructor
     def __init__(self):
-        raise RuntimeError('This is a Singleton; call getInstance() instead!')
+        raise RuntimeError('This is a Singleton; call SingletonPlayer.getInstance() instead!')
 
     #Create a new instance and return it if none existed; else, return made class variable (static) _instance
     @classmethod
@@ -37,11 +38,10 @@ class SingletonPlayer:
         return cls._instance
 
     def updatePlayerState(self):
-        instanceSingleton = SingletonPlayer._instance
-        instanceSingleton.setCurrentPixPos()
-        instanceSingleton.setCanMove()
-        instanceSingleton.pixPos_To_GridPos()
-        instanceSingleton.eatCoin()
+        SingletonPlayer._instance.setCurrentPixPos()
+        SingletonPlayer._instance.setCanMove()
+        SingletonPlayer._instance.pixPos_To_GridPos()
+        SingletonPlayer._instance.eatCoin()
 
     def drawPlayer(self):
         instanceSingleton = SingletonPlayer._instance
