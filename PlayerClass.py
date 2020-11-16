@@ -46,10 +46,9 @@ class SingletonPlayer:
     def drawPlayer(self):
         instanceSingleton = SingletonPlayer._instance
         surface = instanceSingleton.app.screen
-        center = int(instanceSingleton.current_pix_pos.x)
-        radius = int(instanceSingleton.current_pix_pos.y)
+        center = (int(instanceSingleton.current_pix_pos.x), int(instanceSingleton.current_pix_pos.y))
         width = instanceSingleton.app.cell_width // 2 - 2
-        pygame.draw.circle(surface, PLAYER_COLOUR, center, radius, width)
+        pygame.draw.circle(surface, PLAYER_COLOUR, center, width)
 
         #TODO:
         # Drawing the grid pos rect
@@ -57,7 +56,6 @@ class SingletonPlayer:
         #                                         instanceSingleton.current_grid_pos[1]*instanceSingleton.app.cell_height+TOP_BOTTOM_BUFFER//2, instanceSingleton.app.cell_width, instanceSingleton.app.cell_height), 1)
 
     def drawLives(self):
-        #Set params
         instanceSingleton = SingletonPlayer._instance
         surface = instanceSingleton.app.screen
         radius = 7
@@ -72,7 +70,7 @@ class SingletonPlayer:
             SingletonPlayer._instance.removeCoin()
             SingletonPlayer._instance.alterScore(1)
 
-    def setStoredDirection(self, direction):
+    def movePlayer(self, direction):
         SingletonPlayer._instance.stored_direction = direction
 
     
@@ -80,10 +78,7 @@ class SingletonPlayer:
     # HELPER METHODS BELOW #
     ########################################
 
-    #Input:
-        #Works with both pos and neg nums
-    #Output:
-        #int
+    #Works with both pos and neg ints
     def alterScore(self, num):
         SingletonPlayer._instance.current_score += num
 
@@ -94,12 +89,12 @@ class SingletonPlayer:
         #If on a coin
         if instanceSingleton.current_grid_pos in instanceSingleton.app.coins:
             #Vertical
-            if int(instanceSingleton.current_pix_pos.y + TOP_BOTTOM_BUFFER // 2) % instanceSingleton.app.cell_height == 0:
+            if instanceSingleton.yFun():
                 #If looking up or down
                 if instanceSingleton.direction == vec(0, 1) or instanceSingleton.direction == vec(0, -1):
                     return True
             #Horizontal
-            if int(instanceSingleton.current_pix_pos.x + TOP_BOTTOM_BUFFER // 2) % instanceSingleton.app.cell_width == 0:
+            if instanceSingleton.xFun():
                 if instanceSingleton.direction == vec(1, 0) or instanceSingleton.direction == vec(-1, 0):
                     return True
         return False
@@ -118,7 +113,7 @@ class SingletonPlayer:
         return True
 
     def setCanMove(self):
-        instanceSingleton = SingletonPlayer._instance.can_move
+        instanceSingleton = SingletonPlayer._instance
         if instanceSingleton.timeToMove():
             if instanceSingleton.stored_direction != None:
                 instanceSingleton.direction = instanceSingleton.stored_direction
@@ -127,10 +122,10 @@ class SingletonPlayer:
     #Returns a bool
     def timeToMove(self):
         instanceSingleton = SingletonPlayer._instance
-        if int(instanceSingleton.pix_pos.x + TOP_BOTTOM_BUFFER // 2) % instanceSingleton.app.cell_width == 0:
+        if instanceSingleton.xFun():
             if instanceSingleton.direction == vec(1, 0) or instanceSingleton.direction == vec(-1, 0) or instanceSingleton.direction == vec(0, 0):
                 return True
-        if int(instanceSingleton.pix_pos.y + TOP_BOTTOM_BUFFER // 2) % instanceSingleton.app.cell_height == 0:
+        if instanceSingleton.yFun():
             if instanceSingleton.direction == vec(0, 1) or instanceSingleton.direction == vec(0, -1) or instanceSingleton.direction == vec(0, 0):
                 return True
         #TODO: maybe take out?
@@ -160,3 +155,11 @@ class SingletonPlayer:
     def pixPos_To_GridPos_Y(self):
         instanceSingleton = SingletonPlayer._instance
         instanceSingleton.current_grid_pos[1] = (instanceSingleton.current_pix_pos[1] - TOP_BOTTOM_BUFFER + instanceSingleton.app.cell_height // 2) // instanceSingleton.app.cell_height + 1
+
+    #Returns a bool
+    def xFun(self):
+        return (int(SingletonPlayer._instance.current_pix_pos.x + TOP_BOTTOM_BUFFER // 2) % SingletonPlayer._instance.app.cell_width == 0)
+    
+    #Returns a bool
+    def yFun(self):
+        return (int(SingletonPlayer._instance.current_pix_pos.y + TOP_BOTTOM_BUFFER // 2) % SingletonPlayer._instance.app.cell_height == 0)
