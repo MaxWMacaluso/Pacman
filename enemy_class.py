@@ -1,9 +1,10 @@
 import pygame
 from constants import *
+import random
 vec = pygame.math.Vector2 
+#enemy bit states 0 is fast pursuit, 1 is slow pursuit, 2 is targeted 3 is random
 class Enemy:
     def __init__(self, app, pos, name, enemy_bit_state):
-        self.dog = dog
         self.app = app
         self.name = name
         self.current_grid_pos = pos
@@ -18,8 +19,8 @@ class Enemy:
         self.enemy_movement = self.getEnemyMovement()
         self.enemy_bit_state = enemy_bit_state
     def getPixPos():
-        x = (self.grid_pos.x*self.app.cell_width)+TOP_BOTTOM_BUFFER//2+self.app.cell_width//2
-        y = (self.grid_pos.y*self.app.cell_height)+TOP_BOTTOM_BUFFER//2 + self.app.cell_height//2
+        x = (self.grid_pos.x*self.app.cell_width)+TOP_BOTTOM_MARGIN//2+self.app.cell_width//2
+        y = (self.grid_pos.y*self.app.cell_height)+TOP_BOTTOM_MARGIN//2 + self.app.cell_height//2
         return vec(x,y)
                    
     def getSpeed():
@@ -49,11 +50,10 @@ class Enemy:
             else:
                 return vec(COLS-2, ROWS-2)
 
-        #self.grid_pos[0] = (self.pix_pos[0]-TOP_BOTTOM_BUFFER + self.app.cell_width//2)//self.app.cell_width+1
-        #self.grid_pos[1] = (self.pix_pos[1]-TOP_BOTTOM_BUFFER + self.app.cell_height//2)//self.app.cell_height+1
+       
     def canMove():
-        x = int(self.pix_pos.x+TOP_BOTTOM_BUFFER//2) % self.app.cell_width
-        y = int(self.pix_pos.y+TOP_BOTTOM_BUFFER//2) % self.app.cell_height
+        x = int(self.pix_pos.x+TOP_BOTTOM_MARGIN//2) % self.app.cell_width
+        y = int(self.pix_pos.y+TOP_BOTTOM_MARGIN//2) % self.app.cell_height
         if  x == 0:
             if self.direction == vec(1, 0) or self.direction == vec(-1, 0) or self.direction == vec(0, 0):
                 return True
@@ -64,6 +64,10 @@ class Enemy:
     def enemyMove():
         if(self.enemy_bit_state == 0 or self.enemy_bit_state==1 or self.enemy_bit_state==2):
             self.direction = self.findNextPos(self.player_target)
+        if(self.enemy_bit_state==3):
+            listChoice = [[1,0],[0,1],[-1,0],[0,-1]]
+            randomChoice = random.sample(listChoice,4)
+            self.direction = vec(randomChoice[0],randomChoice[1])
 
     def setCurrentPixPos(self):
         if self.player_target != self.current_grid_pos:
@@ -106,10 +110,10 @@ class Enemy:
                     shortest.insert(0, step["Current"])
         return shortest
     def pixPos_To_GridPos_X(self):
-        self.grid_pos[0] = (self.pix_pos[0]-TOP_BOTTOM_BUFFER + self.app.cell_width//2)//self.app.cell_width+1
+        self.grid_pos[0] = (self.pix_pos[0]-TOP_BOTTOM_MARGIN + self.app.cell_width//2)//self.app.cell_width+1
 
     def pixPos_To_GridPos_Y(self):
-        self.grid_pos[1] = (self.pix_pos[1]-TOP_BOTTOM_BUFFER + self.app.cell_height//2)//self.app.cell_height+1
+        self.grid_pos[1] = (self.pix_pos[1]-TOP_BOTTOM_MARGIN + self.app.cell_height//2)//self.app.cell_height+1
 
     def updateEnemyState(self):
         self.player_target = self.getTarget()
@@ -122,13 +126,9 @@ class BlueEnemy(Enemy):
     def draw(self):
         pygame.draw.circle(self.app.screen, (0, 255, 255), (int(self.pix_pos.x), int(self.pix_pos.y)), self.radii)
 
-
-
 class OrangeEnemy(Enemy):
     def draw(self):
         pygame.draw.circle(self.app.screen, (255, 184, 82), (int(self.pix_pos.x), int(self.pix_pos.y)), self.radii)
-
-
 
 class RedEmemy(Enemy):
     def draw(self):
@@ -152,3 +152,8 @@ class EnemyFactory():
             return PinkEmemy()
         return None
 
+if __name__ == '__main__':
+    #instance = Enemy()
+    listChoice = [[1,0],[0,1],[-1,0],[0,-1]]
+    randomChoice = random.sample(listChoice,4)
+    print(vec(randomChoice[0],randomChoice[1]))
