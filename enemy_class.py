@@ -41,7 +41,7 @@ class Enemy:
     '''
     def getTarget(self):
         if self.enemy_bit_state==0 or self.enemy_bit_state ==1:
-            return self.app.player.grid_pos
+            return self.app.player.current_grid_pos
         else:
             if self.app.player.current_grid_pos[0] > COLS//2 and self.app.player.current_grid_pos[1] > ROWS//2:
                 vec(1,1)
