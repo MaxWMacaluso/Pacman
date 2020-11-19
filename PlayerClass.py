@@ -121,9 +121,11 @@ class SingletonPlayer:
     def timeToMove(self):
         instanceSingleton = SingletonPlayer._instance
         if instanceSingleton.xFun():
+            #Right, left, or no direction
             if instanceSingleton.direction == vec(1, 0) or instanceSingleton.direction == vec(-1, 0) or instanceSingleton.direction == vec(0, 0):
                 return True
         if instanceSingleton.yFun():
+            #Up, down, or no direction
             if instanceSingleton.direction == vec(0, 1) or instanceSingleton.direction == vec(0, -1) or instanceSingleton.direction == vec(0, 0):
                 return True
         #TODO: may need to fix logic
@@ -131,9 +133,11 @@ class SingletonPlayer:
 
     def getPixPos(self):
         instanceSingleton = SingletonPlayer._instance
-        vertical_margin = instanceSingleton.UIClass_obj.vertical_margin
-        x = (instanceSingleton.current_grid_pos[0] * instanceSingleton.driver.cell_width) + vertical_margin // 2 + instanceSingleton.driver.cell_width // 2
-        y = (instanceSingleton.current_grid_pos[1] * instanceSingleton.driver.cell_height) + vertical_margin // 2 + instanceSingleton.driver.cell_height // 2
+        margin = instanceSingleton.UIClass_obj.margin
+
+        #TODO: 
+        x = (instanceSingleton.current_grid_pos[0] * instanceSingleton.driver.cell_width) + margin // 2 + instanceSingleton.driver.cell_width // 2
+        y = (instanceSingleton.current_grid_pos[1] * instanceSingleton.driver.cell_height) + margin // 2 + instanceSingleton.driver.cell_height // 2
         return (vec(x, y))
 
     #Uses direction and speed to set current_pix_pos
@@ -149,22 +153,28 @@ class SingletonPlayer:
 
     def pixPos_To_GridPos_X(self):
         instanceSingleton = SingletonPlayer._instance
-        vertical_margin = instanceSingleton.UIClass_obj.vertical_margin
-        instanceSingleton.current_grid_pos[0] = (instanceSingleton.current_pix_pos[0] - vertical_margin + instanceSingleton.driver.cell_width // 2) // instanceSingleton.driver.cell_width + 1
+        margin = instanceSingleton.UIClass_obj.margin
+
+        #TODO:
+        instanceSingleton.current_grid_pos[0] = (instanceSingleton.current_pix_pos[0] - margin + instanceSingleton.driver.cell_width // 2) // instanceSingleton.driver.cell_width + 1
 
     def pixPos_To_GridPos_Y(self):
         instanceSingleton = SingletonPlayer._instance
-        vertical_margin = instanceSingleton.UIClass_obj.vertical_margin
-        instanceSingleton.current_grid_pos[1] = (instanceSingleton.current_pix_pos[1] - vertical_margin + instanceSingleton.driver.cell_height // 2) // instanceSingleton.driver.cell_height + 1
+        margin = instanceSingleton.UIClass_obj.margin
+        instanceSingleton.current_grid_pos[1] = (instanceSingleton.current_pix_pos[1] - margin + instanceSingleton.driver.cell_height // 2) // instanceSingleton.driver.cell_height + 1
 
     #Returns a bool
     def xFun(self):
         instanceSingleton = SingletonPlayer._instance
-        vertical_margin = instanceSingleton.UIClass_obj.vertical_margin
-        return (int(instanceSingleton.current_pix_pos.x + vertical_margin // 2) % instanceSingleton.driver.cell_width == 0)
+        margin = instanceSingleton.UIClass_obj.margin
+
+        #TODO:
+        return (int(instanceSingleton.current_pix_pos.x + margin // 2) % instanceSingleton.driver.cell_width == 0)
     
     #Returns a bool
     def yFun(self):
         instanceSingleton = SingletonPlayer._instance
-        vertical_margin = instanceSingleton.UIClass_obj.vertical_margin
-        return (int(instanceSingleton.current_pix_pos.y + vertical_margin // 2) % instanceSingleton.driver.cell_height == 0)
+        margin = instanceSingleton.UIClass_obj.margin
+
+        #TODO:
+        return (int(instanceSingleton.current_pix_pos.y + margin // 2) % instanceSingleton.driver.cell_height == 0)

@@ -218,7 +218,7 @@ class Driver:
 
         self.screen.fill(self.UIClass_obj.black)
 
-        self.screen.blit(self.background, (self.UIClass_obj.vertical_margin // 2, self.UIClass_obj.vertical_margin // 2))
+        self.screen.blit(self.background, (self.UIClass_obj.margin // 2, self.UIClass_obj.margin // 2))
 
         # TODO: Draw the coins
 

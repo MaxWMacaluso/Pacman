@@ -13,11 +13,11 @@ class UIClass:
         self.black = (0, 0, 0)
 
         #SCREEN
-        self.vertical_margin = 50
+        self.margin = 50
         self.window_width = 610
         self.window_height = 670
-        self.board_width = self.window_width - self.vertical_margin
-        self.board_height = self.window_height - self.vertical_margin
+        self.board_width = self.window_width - self.margin
+        self.board_height = self.window_height - self.margin
 
         #DEFAULT GAME SPEED
         self.fps = 60

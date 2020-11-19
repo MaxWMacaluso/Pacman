@@ -21,8 +21,8 @@ class Enemy:
         #self.enemy_movement = self.getEnemyMovement()
         
     def getPixPos(self):
-        x = (self.current_grid_pos.x * self.driver.cell_width) + self.UIClass_obj.vertical_margin // 2 + self.driver.cell_width // 2
-        y = (self.current_grid_pos.y * self.driver.cell_height) + self.UIClass_obj.vertical_margin // 2 + self.driver.cell_height // 2
+        x = (self.current_grid_pos.x * self.driver.cell_width) + self.UIClass_obj.margin // 2 + self.driver.cell_width // 2
+        y = (self.current_grid_pos.y * self.driver.cell_height) + self.UIClass_obj.margin // 2 + self.driver.cell_height // 2
         return vec(x,y)
                    
     def getSpeed(self):
@@ -57,8 +57,8 @@ class Enemy:
 
        
     def canMove(self):
-        x = int(self.current_pix_pos.x + self.UIClass_obj.vertical_margin // 2) % self.driver.cell_width
-        y = int(self.current_pix_pos.y + self.UIClass_obj.vertical_margin // 2) % self.driver.cell_height
+        x = int(self.current_pix_pos.x + self.UIClass_obj.margin // 2) % self.driver.cell_width
+        y = int(self.current_pix_pos.y + self.UIClass_obj.margin // 2) % self.driver.cell_height
         if  x == 0:
             if self.direction == vec(1, 0) or self.direction == vec(-1, 0) or self.direction == vec(0, 0):
                 return True
@@ -91,10 +91,10 @@ class Enemy:
         return
 
     def pixPos_To_GridPos_X(self):
-        self.current_grid_pos[0] = (self.current_pix_pos[0] - self.UIClass_obj.vertical_margin + self.driver.cell_width // 2) // self.driver.cell_width + 1
+        self.current_grid_pos[0] = (self.current_pix_pos[0] - self.UIClass_obj.margin + self.driver.cell_width // 2) // self.driver.cell_width + 1
 
     def pixPos_To_GridPos_Y(self):
-        self.current_grid_pos[1] = (self.current_pix_pos[1] - self.UIClass_obj.vertical_margin + self.driver.cell_height // 2) // self.driver.cell_height + 1
+        self.current_grid_pos[1] = (self.current_pix_pos[1] - self.UIClass_obj.margin + self.driver.cell_height // 2) // self.driver.cell_height + 1
 
     def updateEnemyState(self):
         self.player_target = self.getTarget()
