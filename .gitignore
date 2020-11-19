@@ -1,0 +1,3 @@
+#Don't track files made by pygame
+__pycache__/
+.idea/

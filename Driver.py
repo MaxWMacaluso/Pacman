@@ -1,15 +1,13 @@
 import pygame
-
 import sys
-from PlayerClass import *
-from enemy_class import *
-
-pygame.init()
 vec = pygame.math.Vector2
 
+from PlayerClass import *
+from EnemyClass import *
 
-# Create the application class
-class App:
+
+# Create the Driver class
+class Driver:
 
     # Initialize variables
     def __init__(self):
@@ -69,7 +67,7 @@ class App:
                 self.current_updates()
                 self.current_drawing()
 
-            # TODO If it is the end of the game
+            # TODO: If it is the end of the game
 
             # Increment the timer
             self.timer.tick(FPS)
@@ -97,7 +95,7 @@ class App:
                     if col == "1":
                         self.walls.append(vec(x, y))
 
-                    # TODO If the value is a C, it's a coin
+                    # TODO: If the value is a C, it's a coin
 
                     # If the value is a P, it's a player
                     elif col == "P":
@@ -111,7 +109,7 @@ class App:
                     elif col == "B":
                         pygame.draw.rect(self.background, BLACK, (x * self.cell_width, y * self.cell_height, self.cell_width, self.cell_height))
 
-    #   TODO Draw the coins as a circle
+    #   TODO: Draw the coins as a circle
 
     # We create enemies using a enemy factory from the enemy class
     def populate_enemies(self):
@@ -119,7 +117,7 @@ class App:
         # Create an enemy factory object
         theFactory = EnemyFactory()
 
-        # def CreateEnemy(self, type, app, pos, name, bit_state):
+        # def CreateEnemy(self, type, Driver, pos, name, bit_state):
         for x, start_location in enumerate(self.enemy_positions):
 
             # Create a Blue Enemy
@@ -177,7 +175,7 @@ class App:
         # Update the display
         pygame.display.update()
 
-    # TODO Currently playing event (MOVEMENT)
+    # TODO: Currently playing event (MOVEMENT)
     def currently_playing(self):
 
         # For each event that occurs during the game
@@ -187,7 +185,7 @@ class App:
             if event.type == pygame.QUIT:
                 self.playing = False
 
-            # TODO If the event is a keystroke
+            # TODO: If the event is a keystroke
 
     # Update while playing
     def current_updates(self):
@@ -213,7 +211,7 @@ class App:
 
         self.screen.blit(self.background, (TOP_BOTTOM_MARGIN // 2, TOP_BOTTOM_MARGIN // 2))
 
-        # TODO Draw the coins
+        # TODO: Draw the coins
 
         # Display the score         THIS SHOULD BE AN OBSERVER METHOD LATER ON
         self.display_stats('SCORE: {}'.format(self.player.current_score), self.screen, [60, 0], 18, WHITE,
@@ -254,8 +252,12 @@ class App:
             # Set the direction of the player to no direction
             self.player.direction *= 0
 
-            # TODO Reset all of the enemy positions
+            # TODO: Reset all of the enemy positions
 
-    # TODO Event for when the game is over
+    # TODO: Event for when the game is over
 
-    # TODO Reset the game when appropriate
+    # TODO: Reset the game when appropriate
+
+if __name__ == '__main__':
+    pygame.init()
+    Driver().game()

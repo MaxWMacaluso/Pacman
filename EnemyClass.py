@@ -1,7 +1,9 @@
 import pygame
-from constants import *
 import random
 vec = pygame.math.Vector2 
+
+from constants import *
+
 #enemy bit states 0 is fast pursuit, 1 is slow pursuit, 2 is targeted 3 is random
 class Enemy:
     def __init__(self, app, pos, name, bit_state):
