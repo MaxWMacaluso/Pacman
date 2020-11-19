@@ -5,10 +5,7 @@
     #https://github.com/a-plus-coding/pacman-with-python
     #http://zetcode.com/javagames/pacman/
 
-import pygame
-
-from constants import *
-vec = pygame.math.Vector2
+from UIClass import *
 
 #Interesting note, theoretically, a SingletonPlayer instance would have no attributes (essentially null); however, static _instance is what is defined.
 #This is why self.[attributes] does not work
@@ -21,11 +18,13 @@ class SingletonPlayer:
         raise RuntimeError('This is a Singleton; call SingletonPlayer.getInstance() instead!')
 
     #Create a new instance and return it if none existed; else, return made class variable (static) _instance
+    #Similiar to a static method
     @classmethod
-    def getInstance(cls, app, pos):
+    def getInstance(cls, driver, pos):
         if cls._instance is None:
             cls._instance = cls.__new__(cls)
-            cls._instance.app = app
+            cls._instance.UIClass_obj = UIClass() #Make a new instance of UIClass
+            cls._instance.driver = driver
             cls._instance.speed = 2
             cls._instance.num_lives = 1
             cls._instance.current_grid_pos = pos
@@ -45,19 +44,23 @@ class SingletonPlayer:
 
     def drawPlayer(self):
         instanceSingleton = SingletonPlayer._instance
-        surface = instanceSingleton.app.screen
+        surface = instanceSingleton.driver.screen
+        color = instanceSingleton.UIClass_obj.player_color
         center = (int(instanceSingleton.current_pix_pos.x), int(instanceSingleton.current_pix_pos.y))
-        width = instanceSingleton.app.cell_width // 2 - 2
-        pygame.draw.circle(surface, PLAYER_COLOUR, center, width)
+        width = instanceSingleton.driver.cell_width // 2 - 2
+        instanceSingleton.UIClass_obj.drawCircle(surface, color, center, width)
 
     def drawLives(self):
         instanceSingleton = SingletonPlayer._instance
-        surface = instanceSingleton.app.screen
+        surface = instanceSingleton.driver.screen
+        color = instanceSingleton.UIClass_obj.player_color
         radius = 7
         #Repeats to number of num_lives
         for x in range(instanceSingleton.num_lives):
-            center = (int(30 + 20 * x), int(WINDOW_HEIGHT - 15))
-            pygame.draw.circle(surface, PLAYER_COLOUR, center, radius)
+            x = int(30 + 20 * x)
+            y = int(instanceSingleton.UIClass_obj.window_height - 15)
+            center = (x, y)
+            instanceSingleton.UIClass.drawCircle(surface, color, center, radius)
 
     def eatCoin(self):
         instanceSingleton = SingletonPlayer._instance
@@ -82,7 +85,7 @@ class SingletonPlayer:
     def onCoin(self):
         instanceSingleton = SingletonPlayer._instance
         #If on a coin
-        if instanceSingleton.current_grid_pos in instanceSingleton.app.coins:
+        if instanceSingleton.current_grid_pos in instanceSingleton.driver.coins:
             #Vertical
             if instanceSingleton.yFun():
                 #If looking up or down
@@ -97,12 +100,12 @@ class SingletonPlayer:
     #Removes coin from map
     def removeCoin(self):
         instanceSingleton = SingletonPlayer._instance
-        instanceSingleton.app.coins.remove(instanceSingleton.current_grid_pos)
+        instanceSingleton.driver.coins.remove(instanceSingleton.current_grid_pos)
 
     #Returns a bool
     def canMove(self):
         instanceSingleton = SingletonPlayer._instance
-        for wall in instanceSingleton.app.walls:
+        for wall in instanceSingleton.driver.walls:
             if vec(instanceSingleton.current_grid_pos + instanceSingleton.direction) == wall:
                 return False
         return True
@@ -128,8 +131,9 @@ class SingletonPlayer:
 
     def getPixPos(self):
         instanceSingleton = SingletonPlayer._instance
-        x = (instanceSingleton.current_grid_pos[0] * instanceSingleton.app.cell_width) + TOP_BOTTOM_MARGIN // 2 + instanceSingleton.app.cell_width // 2
-        y = (instanceSingleton.current_grid_pos[1] * instanceSingleton.app.cell_height) + TOP_BOTTOM_MARGIN // 2 + instanceSingleton.app.cell_height // 2
+        vertical_margin = instanceSingleton.UIClass_obj.vertical_margin
+        x = (instanceSingleton.current_grid_pos[0] * instanceSingleton.driver.cell_width) + vertical_margin // 2 + instanceSingleton.driver.cell_width // 2
+        y = (instanceSingleton.current_grid_pos[1] * instanceSingleton.driver.cell_height) + vertical_margin // 2 + instanceSingleton.driver.cell_height // 2
         return (vec(x, y))
 
     #Uses direction and speed to set current_pix_pos
@@ -145,16 +149,22 @@ class SingletonPlayer:
 
     def pixPos_To_GridPos_X(self):
         instanceSingleton = SingletonPlayer._instance
-        instanceSingleton.current_grid_pos[0] = (instanceSingleton.current_pix_pos[0] - TOP_BOTTOM_MARGIN + instanceSingleton.app.cell_width // 2) // instanceSingleton.app.cell_width + 1
+        vertical_margin = instanceSingleton.UIClass_obj.vertical_margin
+        instanceSingleton.current_grid_pos[0] = (instanceSingleton.current_pix_pos[0] - vertical_margin + instanceSingleton.driver.cell_width // 2) // instanceSingleton.driver.cell_width + 1
 
     def pixPos_To_GridPos_Y(self):
         instanceSingleton = SingletonPlayer._instance
-        instanceSingleton.current_grid_pos[1] = (instanceSingleton.current_pix_pos[1] - TOP_BOTTOM_MARGIN + instanceSingleton.app.cell_height // 2) // instanceSingleton.app.cell_height + 1
+        vertical_margin = instanceSingleton.UIClass_obj.vertical_margin
+        instanceSingleton.current_grid_pos[1] = (instanceSingleton.current_pix_pos[1] - vertical_margin + instanceSingleton.driver.cell_height // 2) // instanceSingleton.driver.cell_height + 1
 
     #Returns a bool
     def xFun(self):
-        return (int(SingletonPlayer._instance.current_pix_pos.x + TOP_BOTTOM_MARGIN // 2) % SingletonPlayer._instance.app.cell_width == 0)
+        instanceSingleton = SingletonPlayer._instance
+        vertical_margin = instanceSingleton.UIClass_obj.vertical_margin
+        return (int(instanceSingleton.current_pix_pos.x + vertical_margin // 2) % instanceSingleton.driver.cell_width == 0)
     
     #Returns a bool
     def yFun(self):
-        return (int(SingletonPlayer._instance.current_pix_pos.y + TOP_BOTTOM_MARGIN // 2) % SingletonPlayer._instance.app.cell_height == 0)
+        instanceSingleton = SingletonPlayer._instance
+        vertical_margin = instanceSingleton.UIClass_obj.vertical_margin
+        return (int(instanceSingleton.current_pix_pos.y + vertical_margin // 2) % instanceSingleton.driver.cell_height == 0)

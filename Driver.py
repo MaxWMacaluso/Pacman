@@ -1,22 +1,24 @@
-import pygame
 import sys
-vec = pygame.math.Vector2
+import pygame
 
 from PlayerClass import *
 from EnemyClass import *
+from UIClass import * 
 
 
 # Create the Driver class
 class Driver:
 
-    # Initialize variables
+    # Constructor
     def __init__(self):
-
+        #Make a new instance of UIClass
+        self.UIClass_obj = UIClass()
+        
         # Create the board to be played on
-        self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+        self.screen = self.UIClass_obj.setMode()
 
         # Create the timer that will keep running during the game
-        self.timer = pygame.time.Clock()
+        self.timer = self.UIClass_obj.gameClock()
 
         # Set the playing state to True
         self.playing = True
@@ -24,11 +26,11 @@ class Driver:
         # Set the start state to 'start'
         self.state = 'start'
 
-        # Set the size of the cell based on the constants file
-        self.cell_width = BOARD_WIDTH // COLS
-        self.cell_height = BOARD_HEIGHT // ROWS
+        # Set the size of the cell based on the UIClass.py file
+        self.cell_width = self.UIClass_obj.board_width // self.UIClass_obj.columns
+        self.cell_height = self.UIClass_obj.board_height // self.UIClass_obj.rows
 
-        # Create the arrays for the walls, coins, enemies, and enemy positions to fill and update over time
+        # Create the lists for the walls, coins, enemies, and enemy positions to fill and update over time
         self.walls = []
         self.enemy_list = []
         self.enemy_positions = []
@@ -44,7 +46,7 @@ class Driver:
         self.player = SingletonPlayer.getInstance(self, vec(self.player_position))
 
         # Populate our enemies array by creating enemies
-        self.populate_enemies()
+        self.populateEnemies()
 
     # Begin running the game
     def game(self):
@@ -56,31 +58,32 @@ class Driver:
             if self.state == 'start':
 
                 # Run the events class which corresponds to starting the program
-                self.program_start()
-                self.program_draw()
+                self.programStart()
+                self.programDraw()
 
             # If it is currently during the game
             elif self.state == 'playing':
 
                 # Run the classes which corresponds to currently playing the game
-                self.currently_playing()
-                self.current_updates()
-                self.current_drawing()
+                self.currentlyPlaying()
+                self.currentUpdates()
+                self.currentDrawing()
 
             # TODO: If it is the end of the game
 
             # Increment the timer
-            self.timer.tick(FPS)
+            self.timer.tick(self.UIClass_obj.fps)
 
         # Once everything is done quit the game
-        pygame.quit()
+        self.UIClass_obj.quitGame()
         sys.exit()
 
     # Set the board image, and the grid that overlaps the board within the pygame window
     def setgame(self):
-
-        self.background = pygame.image.load('maze.png')
-        self.background = pygame.transform.scale(self.background, (BOARD_WIDTH, BOARD_HEIGHT))
+        board_width = self.UIClass_obj.board_width
+        board_height = self.UIClass_obj.board_height
+        self.background = self.UIClass_obj.loadImg('bg.png')
+        self.background = self.UIClass_obj.scaleImg(self.background, board_width, board_height)
 
         # Create the playable board using the walls.txt file
         with open("board_walls.txt", 'r') as file:
@@ -107,12 +110,13 @@ class Driver:
 
                     # If the value is a B, then it's the background
                     elif col == "B":
-                        pygame.draw.rect(self.background, BLACK, (x * self.cell_width, y * self.cell_height, self.cell_width, self.cell_height))
+                        black = self.UIClass_obj.black
+                        self.UIClass_obj.drawRect(self.background, black, (x * self.cell_width, y * self.cell_height, self.cell_width, self.cell_height))
 
     #   TODO: Draw the coins as a circle
 
     # We create enemies using a enemy factory from the enemy class
-    def populate_enemies(self):
+    def populateEnemies(self):
 
         # Create an enemy factory object
         theFactory = EnemyFactory()
@@ -131,14 +135,14 @@ class Driver:
 
             # Create a Red Enemy (note enemy spelled incorrectly)
             elif x == 2:
-                self.enemy_list.append(theFactory.CreateEnemy("Red", self, vec(start_location), RedEmemy, x))
+                self.enemy_list.append(theFactory.CreateEnemy("Red", self, vec(start_location), RedEnemy, x))
 
             # Create a Pink Enemy (note enemy spelled incorrectly)
             elif x == 3:
                 self.enemy_list.append(theFactory.CreateEnemy("Pink", self, vec(start_location), PinkEmemy, x))
 
     # Make a way for text to be displayed during the game
-    def display_stats(self, words, screen, pos, size, color, font_name, centered=False):
+    def displayStats(self, words, screen, pos, size, color, font_name, centered=False):
 
         # Set font, size, and color
         # The text needs to be centered or it will not show up on the pygame window
@@ -149,7 +153,7 @@ class Driver:
         screen.blit(pygame.font.SysFont(font_name, size).render(words, False, color), pos)
 
     # Program start event
-    def program_start(self):
+    def programStart(self):
 
         for event in pygame.event.get():
 
@@ -162,21 +166,26 @@ class Driver:
                 self.state = 'playing'
 
     # Draw the board
-    def program_draw(self):
+    def programDraw(self):
 
-        self.screen.fill(BLACK)
+        self.screen.fill(self.UIClass_obj.black)
+        window_width = self.UIClass_obj.window_width
+        window_height = self.UIClass_obj.window_height
+        font_style = self.UIClass_obj.start_font_style
+        text_size = self.UIClass_obj.start_screen_text_size
 
         # Tell the player what button to push to start playing
-        self.display_stats('Press SPACE to start', self.screen, [WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 50], START_TEXT_SIZE, (170, 132, 58), START_FONT, centered=True)
+        self.displayStats('Press SPACE to start', self.screen, [window_width // 2, window_height // 2 - 50], text_size, (170, 132, 58), font_style, centered=True)
 
-        # Tell the player that there will only be one player at once
-        self.display_stats('Single Player', self.screen, [WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 50], START_TEXT_SIZE, (44, 167, 198), START_FONT, centered=True)
+        # Display Our Team Info
+        self.displayStats('Pac Man Recreation', self.screen, [window_width // 2, window_height // 2 + 50], text_size, (44, 167, 198), font_style, centered=True)
+        self.displayStats('Max Macaluso, Rohan Suri, Sahib Bajwa', self.screen, [window_width // 2, window_height // 2 + 100], text_size, (44, 167, 198), font_style, centered=True)
 
         # Update the display
-        pygame.display.update()
+        self.UIClass_obj.updateDisplay()
 
     # TODO: Currently playing event (MOVEMENT)
-    def currently_playing(self):
+    def currentlyPlaying(self):
 
         # For each event that occurs during the game
         for event in pygame.event.get():
@@ -188,7 +197,7 @@ class Driver:
             # TODO: If the event is a keystroke
 
     # Update while playing
-    def current_updates(self):
+    def currentUpdates(self):
 
         # Update the player's state
         self.player.updatePlayerState()
@@ -202,23 +211,22 @@ class Driver:
 
             if x.getPixPos() == self.player.getPixPos():
                 # Remove a life since the player has died
-                self.decrement_lives()
+                self.decrementLives()
 
     # Draw the board during the game
-    def current_drawing(self):
+    def currentDrawing(self):
 
-        self.screen.fill(BLACK)
+        self.screen.fill(self.UIClass_obj.black)
 
-        self.screen.blit(self.background, (TOP_BOTTOM_MARGIN // 2, TOP_BOTTOM_MARGIN // 2))
+        self.screen.blit(self.background, (self.UIClass_obj.vertical_margin // 2, self.UIClass_obj.vertical_margin // 2))
 
         # TODO: Draw the coins
 
         # Display the score         THIS SHOULD BE AN OBSERVER METHOD LATER ON
-        self.display_stats('SCORE: {}'.format(self.player.current_score), self.screen, [60, 0], 18, WHITE,
-                          START_FONT)
+        self.displayStats('SCORE: {}'.format(self.player.current_score), self.screen, [60, 0], 18, self.UIClass_obj.white, self.UIClass_obj.start_font_style)
 
         # Display the timer in seconds NOT WORKING RIGHT NOW       THIS SHOULD BE AN OBSERVER METHOD LATER ON
-        self.display_stats('Timer: {}'.format(self.timer), self.screen, [WINDOW_WIDTH // 2 + 60, 0], 18, WHITE, START_FONT)
+        self.displayStats('Timer: {}'.format(self.timer), self.screen, [self.UIClass_obj.window_width // 2 + 60, 0], 18, self.UIClass_obj.white, self.UIClass_obj.start_font_style)
 
         # Draw the player
         self.player.drawPlayer()
@@ -228,10 +236,10 @@ class Driver:
             x.draw()
 
         # Display the update
-        pygame.display.update()
+        self.UIClass_obj.updateDisplay()
 
     # Function for when a player loses a life
-    def decrement_lives(self):
+    def decrementLives(self):
 
         # Decrement the lives count by 1
         self.player.num_lives -= 1
@@ -257,6 +265,11 @@ class Driver:
     # TODO: Event for when the game is over
 
     # TODO: Reset the game when appropriate
+
+
+    ########################################
+    # DRIVER BELOW #
+    ########################################
 
 if __name__ == '__main__':
     pygame.init()
