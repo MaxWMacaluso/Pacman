@@ -1,19 +1,22 @@
+# Timer tutorial: https://www.youtube.com/watch?v=juSH7hmYUGA
+
 import sys
-import pygame
 
 from PlayerClass import *
 from EnemyClass import *
-from UIClass import * 
+from UIClass import *
 
+import time
 
 # Create the Driver class
 class Driver:
 
     # Constructor
     def __init__(self):
-        #Make a new instance of UIClass
+
+        # Make a new instance of UIClass
         self.UIClass_obj = UIClass()
-        
+
         # Create the board to be played on
         self.screen = self.UIClass_obj.setMode()
 
@@ -23,7 +26,7 @@ class Driver:
         # Set the playing state to True
         self.playing = True
 
-        # Set the start state to 'start'
+        # Set the game state to 'start'
         self.state = 'start'
 
         # Set the size of the cell based on the UIClass.py file
@@ -35,6 +38,8 @@ class Driver:
         self.enemy_list = []
         self.enemy_positions = []
         self.coins = []
+
+        self.numLives = 3
 
         # Create the player's position to start and where it will be updated over time
         self.player_position = None
@@ -48,7 +53,11 @@ class Driver:
         # Populate our enemies array by creating enemies
         self.populateEnemies()
 
-    # Begin running the game
+        # Set start time and elapsed time
+        self.startTime = time.time()
+        self.elapsedTime = 0
+
+    # Begin playing the game
     def game(self):
 
         # While the game is being played
@@ -69,7 +78,16 @@ class Driver:
                 self.currentUpdates()
                 self.currentDrawing()
 
-            # TODO: If it is the end of the game
+                # Increment countdown timer
+                self.elapsedTime = int(time.time() - self.startTime)
+
+            # If it is the end of the game
+            elif self.state == 'game over':
+
+                # Run the events class which corresponds to ending the program
+                self.endGame()
+                self.endGameUpdate()
+                self.endGameDraw()
 
             # Increment the timer
             self.timer.tick(self.UIClass_obj.fps)
@@ -80,8 +98,10 @@ class Driver:
 
     # Set the board image, and the grid that overlaps the board within the pygame window
     def setgame(self):
+
         board_width = self.UIClass_obj.board_width
         board_height = self.UIClass_obj.board_height
+
         self.background = self.UIClass_obj.loadImg('bg.png')
         self.background = self.UIClass_obj.scaleImg(self.background, board_width, board_height)
 
@@ -98,7 +118,9 @@ class Driver:
                     if col == "1":
                         self.walls.append(vec(x, y))
 
-                    # TODO: If the value is a C, it's a coin
+                    # If the value is a C, it's a coin
+                    elif col == "C":
+                        self.coins.append(vec(x, y))
 
                     # If the value is a P, it's a player
                     elif col == "P":
@@ -113,7 +135,13 @@ class Driver:
                         black = self.UIClass_obj.black
                         self.UIClass_obj.drawRect(self.background, black, (x * self.cell_width, y * self.cell_height, self.cell_width, self.cell_height))
 
-    #   TODO: Draw the coins as a circle
+    # Display the coins as a circle
+    def coin_display(self):
+
+        # For each coin in the coin list, draw the coin
+        for coin in self.coins:
+            pygame.draw.circle(self.screen, (124, 123, 10), (int(coin.x * self.cell_width) + self.cell_width // 2 + self.UIClass_obj.margin // 2, int(coin.y * self.cell_height) + self.cell_height // 2 + self.UIClass_obj.margin // 2), 5)
+
 
     # We create enemies using a enemy factory from the enemy class
     def populateEnemies(self):
@@ -141,17 +169,6 @@ class Driver:
             elif x == 3:
                 self.enemy_list.append(theFactory.CreateEnemy("Pink", self, vec(start_location), PinkEmemy, x))
 
-    # Make a way for text to be displayed during the game
-    def displayStats(self, words, screen, pos, size, color, font_name, centered=False):
-
-        # Set font, size, and color
-        # The text needs to be centered or it will not show up on the pygame window
-        if centered:
-            pos[0] = pos[0] - pygame.font.SysFont(font_name, size).render(words, False, color).get_size()[0] // 2
-            pos[1] = pos[1] - pygame.font.SysFont(font_name, size).render(words, False, color).get_size()[1] // 2
-
-        screen.blit(pygame.font.SysFont(font_name, size).render(words, False, color), pos)
-
     # Program start event
     def programStart(self):
 
@@ -174,27 +191,47 @@ class Driver:
         font_style = self.UIClass_obj.start_font_style
         text_size = self.UIClass_obj.start_screen_text_size
 
+        # Create the announcing observer
+        announceObserver = observerMethod()
+
         # Tell the player what button to push to start playing
-        self.displayStats('Press SPACE to start', self.screen, [window_width // 2, window_height // 2 - 50], text_size, (170, 132, 58), font_style, centered=True)
+        announceObserver.observerDisplay('Press SPACE to start', self.screen, [window_width // 2, window_height // 2 - 75], 35, (170, 132, 58), font_style, centered=True)
 
         # Display Our Team Info
-        self.displayStats('Pac Man Recreation', self.screen, [window_width // 2, window_height // 2 + 50], text_size, (44, 167, 198), font_style, centered=True)
-        self.displayStats('Max Macaluso, Rohan Suri, Sahib Bajwa', self.screen, [window_width // 2, window_height // 2 + 100], text_size, (44, 167, 198), font_style, centered=True)
+        announceObserver.observerDisplay('Pac Man Recreation', self.screen, [window_width // 2, window_height // 2 + 25], 25, (44, 167, 198), font_style, centered=True)
+        announceObserver.observerDisplay('Max Macaluso, Rohan Suri, Sahib Bajwa', self.screen, [window_width // 2, window_height // 2 + 75], text_size, (55, 155, 98), font_style, centered=True)
 
         # Update the display
         self.UIClass_obj.updateDisplay()
 
-    # TODO: Currently playing event (MOVEMENT)
+    # Currently playing event (MOVEMENT)
     def currentlyPlaying(self):
 
         # For each event that occurs during the game
         for event in pygame.event.get():
 
+            # If the event is a keystroke
+            if event.type == pygame.KEYDOWN:
+
+                # If the inputted keystroke is a left key, the player should move left
+                if event.key == pygame.K_LEFT:
+                    self.player.movePlayer(vec(-1, 0))
+
+                # If the inputted keystroke is a right key, the player should be moved right
+                if event.key == pygame.K_RIGHT:
+                    self.player.movePlayer(vec(1, 0))
+
+                # If the inputted keystroke is a up key, the player should be moved up
+                if event.key == pygame.K_UP:
+                    self.player.movePlayer(vec(0, -1))
+
+                # If the inputted keystroke is a down key, the player should be moved down
+                if event.key == pygame.K_DOWN:
+                    self.player.movePlayer(vec(0, 1))
+
             # If the event is to quit the game, set the playing state to False
             if event.type == pygame.QUIT:
                 self.playing = False
-
-            # TODO: If the event is a keystroke
 
     # Update while playing
     def currentUpdates(self):
@@ -202,7 +239,7 @@ class Driver:
         # Update the player's state
         self.player.updatePlayerState()
 
-        # Update each enemy's state
+        # TODO: Update each enemy's state (Rohan)
         for x in self.enemy_list:
             x.updateEnemyState()
 
@@ -220,13 +257,19 @@ class Driver:
 
         self.screen.blit(self.background, (self.UIClass_obj.margin // 2, self.UIClass_obj.margin // 2))
 
-        # TODO: Draw the coins
+        # Draw the coins while the game is being played
+        self.coin_display()
 
-        # Display the score         THIS SHOULD BE AN OBSERVER METHOD LATER ON
-        self.displayStats('SCORE: {}'.format(self.player.current_score), self.screen, [60, 0], 18, self.UIClass_obj.white, self.UIClass_obj.start_font_style)
+        # Create the announcing observer
+        announceObserver = observerMethod()
 
-        # Display the timer in seconds NOT WORKING RIGHT NOW       THIS SHOULD BE AN OBSERVER METHOD LATER ON
-        self.displayStats('Timer: {}'.format(self.timer), self.screen, [self.UIClass_obj.window_width // 2 + 60, 0], 18, self.UIClass_obj.white, self.UIClass_obj.start_font_style)
+        # Display the score while the game is being played
+        announceObserver.observerDisplay('SCORE: {}'.format(self.player.current_score), self.screen, [60, 0], 18, self.UIClass_obj.white, self.UIClass_obj.start_font_style)
+
+        # Display the timer in seconds while the game is being played
+        announceObserver.observerDisplay('Time: {}'.format(self.elapsedTime), self.screen, [self.UIClass_obj.window_width // 2 + 60, 0], 18, self.UIClass_obj.white, self.UIClass_obj.start_font_style)
+
+        announceObserver.observerDisplay('Lives: {}'.format(self.numLives), self.screen, [self.UIClass_obj.window_width // 4 + 60, 0], 18, self.UIClass_obj.white, self.UIClass_obj.start_font_style)
 
         # Draw the player
         self.player.drawPlayer()
@@ -242,30 +285,151 @@ class Driver:
     def decrementLives(self):
 
         # Decrement the lives count by 1
-        self.player.num_lives -= 1
+        self.numLives -= 1
 
         # If the player has no lives, set the game state to over
-        if self.player.num_lives == 0:
+        if self.numLives == 0:
             self.state = "game over"
 
         # If the player still has lives
         else:
 
             # Set the grid position of the player as the starting position
-            self.player.grid_pos = vec(self.player.starting_pos)
+            self.player.resetGridPos()
 
             # Set the pixel position of the player as the starting position
-            self.player.pix_pos = self.player.getPixPos()
+            self.player.resetPixPos()
 
             # Set the direction of the player to no direction
-            self.player.direction *= 0
+            self.player.resetDirection()
 
-            # TODO: Reset all of the enemy positions
+            # TODO: Reset all of the enemy positions (Rohan)
+            for enemy in self.enemy_list:
 
-    # TODO: Event for when the game is over
+                # Set the grid position of the enemy to the starting position
+                enemy.grid_pos = vec(enemy.starting_pos)
 
-    # TODO: Reset the game when appropriate
+                # Set the pixel position of the of the enemy to the starting position
+                enemy.pix_pos = enemy.getPixPos()
 
+                # Set the direction of the player to no direction
+                enemy.direction *= 0
+
+    # Event for when the game is over
+    def endGame(self):
+
+        for event in pygame.event.get():
+
+            # If the user quits the game set the playing state to False
+            if event.type == pygame.QUIT:
+                self.playing = False
+
+            # If the player presses space in the end game menu, reset the game
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                self.reset()
+
+            # If the player preses escape in the end game menu, exit out of the game
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                self.playing = False
+
+    # We don't need to really update anything if the program has just started
+    def endGameUpdate(self):
+        pass
+
+    # If the game is over, we create a end game menu
+    def endGameDraw(self):
+
+        # Fill the entire window with a black background
+        self.screen.fill(self.UIClass_obj.black)
+
+        # Set the window dimensions
+        window_width = self.UIClass_obj.window_width
+        window_height = self.UIClass_obj.window_height
+
+        # Create the announcing observer
+        announceObserver = observerMethod()
+
+        # Display the end game menu texts
+        announceObserver.observerDisplay("GAME OVER", self.screen, [window_width // 2, window_height // 2 - 150],  52, self.UIClass_obj.red,  "arial", centered = True)
+        announceObserver.observerDisplay("Press SPACE to play again.", self.screen, [window_width // 2, window_height // 2 - 50],  36, (190, 190, 190), "arial", centered = True)
+        announceObserver.observerDisplay("Press ESCAPE to quit the game.", self.screen, [window_width // 2, window_height // 2 - 10],  36, (190, 190, 190), "arial", centered = True)
+
+        # Score text
+        announceObserver.observerDisplay('Score: {}'.format(self.player.returnScore()), self.screen, [window_width // 2, window_height // 2 + 90],  36, (190, 190, 190), "arial", centered = True)
+
+        # Timer text
+        elapsedTime2 = str(self.elapsedTime)
+        announceObserver.observerDisplay('Time: {} seconds'.format(elapsedTime2), self.screen, [window_width // 2, window_height // 2 + 130],  36, (190, 190, 190), "arial", centered = True)
+
+        # Update the display
+        pygame.display.update()
+
+    # Reset the game when appropriate
+    def reset(self):
+
+        # Set the lives back to 3
+        self.numLives = 3
+
+        # Set the score back to 0
+        self.player.resetScore()
+
+        # Set the player back to the starting location
+        self.player.resetGridPos()
+
+        # Set the player's pixel position back to the starting location
+        self.player.resetPixPos()
+
+        # Set the character's moving/facing direction to nothing
+        self.player.resetDirection()
+
+        # TODO: Set the enemies back to the starting position (Rohan)
+        for x in self.enemy_list:
+
+            # Set the enemy's back to the starting location
+            x.grid_pos = vec(x.starting_pos)
+
+            # Set the enemy's pixel position back to the starting position
+            x.pix_pos = x.getPixPos()
+
+            # Set the enemy's moving/facing direction to nothing
+            x.direction *= 0
+
+        # Set the coins array back to empty
+        self.coins = []
+
+        # Set the elapsed time to 0
+        self.elapsedTime = 0
+
+        # Set the new start time
+        self.startTime = time.time()
+
+        # Reset the coin locations using the text file
+        with open("board_walls.txt", 'r') as file:
+
+            for y, line in enumerate(file):
+
+                for x, char in enumerate(line):
+
+                    if char == 'C':
+
+                        self.coins.append(vec(x, y))
+
+        # Set the game state to playing
+        self.state = "playing"
+
+# This observer will help declare any text during the game such as: Score, Time, Lives, and menus.
+class observerMethod():
+
+    # Method that will be used declare any actions/changes that occur during the game.
+    def observerDisplay(self, words, screen, pos, size, color, font_name, centered=False):
+
+        # Set font, size, and color
+        # The text needs to be centered or it will not show up on the pygame window
+        if centered:
+            pos[0] = pos[0] - pygame.font.SysFont(font_name, size).render(words, False, color).get_size()[0] // 2
+            pos[1] = pos[1] - pygame.font.SysFont(font_name, size).render(words, False, color).get_size()[1] // 2
+
+        screen.blit(pygame.font.SysFont(font_name, size).render(words, False, color), pos)
 
     ########################################
     # DRIVER BELOW #

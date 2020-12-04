@@ -178,3 +178,22 @@ class SingletonPlayer:
 
         #TODO:
         return (int(instanceSingleton.current_pix_pos.y + margin // 2) % instanceSingleton.driver.cell_height == 0)
+
+    # Sahib's methods for Driver.py
+    def returnScore(self):
+        return SingletonPlayer._instance.current_score
+
+    def resetGridPos(self):
+        instanceSingleton = SingletonPlayer._instance
+        instanceSingleton.current_grid_pos = vec(instanceSingleton.starting_pos)
+
+    def resetPixPos(self):
+        instanceSingleton = SingletonPlayer._instance
+        instanceSingleton.current_pix_pos = SingletonPlayer.getPixPos(self)
+
+    def resetDirection(self):
+        instanceSingleton = SingletonPlayer._instance
+        instanceSingleton.direction *= 0
+
+    def resetScore(self):
+        SingletonPlayer._instance.current_score = 0
