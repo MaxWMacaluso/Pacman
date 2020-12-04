@@ -38,6 +38,7 @@ class Driver:
         self.enemy_list = []
         self.enemy_positions = []
         self.coins = []
+        self.scorecap = 0
 
         self.numLives = 3
 
@@ -121,6 +122,7 @@ class Driver:
                     # If the value is a C, it's a coin
                     elif col == "C":
                         self.coins.append(vec(x, y))
+                        self.scorecap += 1
 
                     # If the value is a P, it's a player
                     elif col == "P":
@@ -249,6 +251,9 @@ class Driver:
             if x.getPixPos() == self.player.getPixPos():
                 # Remove a life since the player has died
                 self.decrementLives()
+
+        if self.player.returnScore() == self.scorecap:
+            self.state = "game over"
 
     # Draw the board during the game
     def currentDrawing(self):
