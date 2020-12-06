@@ -1,15 +1,30 @@
+########################################
+# NOTES BELOW #
+########################################
+
 #This class is responsible for most things related to UI and pygame
+
+########################################
+# IMPORTS BELOW #
+########################################
 
 import pygame
 vec = pygame.math.Vector2
+
+########################################
+# UICLASS BELOW #
+########################################
 
 class UIClass:
     def __init__(self):
         #COLORS
         self.player_color = (190, 194, 15)
         self.coin_color = (124, 123, 10)
-        self.red = (208, 22, 22)
+        self.red = (255, 0, 0)
+        self.pink = (255, 184, 255)
         self.white = (255, 255, 255)
+        self.blue = (0, 255, 255)
+        self.orange = (255, 184, 82)
         self.grey = (107, 107, 107)
         self.black = (0, 0, 0)
 
@@ -48,7 +63,8 @@ class UIClass:
     def updateDisplay(self):
         pygame.display.update()
 
-    def loadImg(self, bg_img):
+
+    def loadBgImg(self, bg_img):
         return (pygame.image.load(bg_img))
 
     def scaleImg(self, bg, width, height):

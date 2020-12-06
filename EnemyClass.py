@@ -1,7 +1,15 @@
+########################################
+# NOTES BELOW #
+########################################
+
 #Utilizes the Simple Factory Design Pattern
 
 #In creation of this file, REFERENCED:
     #https://pypi.org/project/pathfinding/
+
+########################################
+# IMPORTS BELOW #
+########################################
 
 #Import 3rd Party Libraries
 import random
@@ -11,6 +19,10 @@ from pathfinding.finder.a_star import AStarFinder
 
 #Import all from UIClass
 from UIClass import *
+
+########################################
+# ENEMY CLASS BELOW #
+########################################
 
 #Notes: 
     #Enemy bit states 0 is fast pursuit, 1 is slow pursuit, 2 is targeted 3 is random
@@ -23,13 +35,10 @@ class Enemy:
         self.current_grid_pos = pos
         self.current_pix_pos = self.getPixPos();
         self.starting_pos = [pos.x, pos.y]
-        #color attribute determined in the factory
-        #self.id 
         self.direction = vec(0,0)
         self.player_target = None
         self.radii = int(self.driver.cell_width//2.3)
         self.speed = self.getSpeed()
-        #self.enemy_movement = self.getEnemyMovement()
         
     def getPixPos(self):
         x = (self.current_grid_pos.x * self.driver.cell_width) + self.UIClass_obj.margin // 2 + self.driver.cell_width // 2
@@ -42,15 +51,7 @@ class Enemy:
         else:
             self.speed = 1
         return self.speed;
-    '''
-    def getEnemyMovement(self):
-        if self.enemy_bit_state==0:
-            return "fast_pursuit"
-        elif(self.enemy_bit_state==1):
-            return "slow_pursuit"
-        else:
-            return "targeted"
-    '''
+
     def getTarget(self):
         rows = self.UIClass_obj.rows
         cols = self.UIClass_obj.columns
@@ -98,7 +99,6 @@ class Enemy:
         return vec(delta_x,delta_y)
 
     def AStarSearchEnemyTarget(self, start, target):
-        #TODO: IMPLEMENT A* OR BFS ALGO
         board = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 [0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0],
 [0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,1,0],
@@ -155,37 +155,35 @@ class Enemy:
         self.pixPos_To_GridPos_X()
         self.pixPos_To_GridPos_Y()
 
+########################################
+# SIMPLE FACTORY BELOW #
+########################################
+
 class BlueEnemy(Enemy):
     def draw(self):
-        self.UIClass_obj.drawCircle(self.driver.screen, (0, 255, 255), (int(self.current_pix_pos.x), int(self.current_pix_pos.y)), self.radii)
+        self.UIClass_obj.drawCircle(self.driver.screen, self.UIClass_obj.blue, (int(self.current_pix_pos.x), int(self.current_pix_pos.y)), self.radii)
 
 class OrangeEnemy(Enemy):
     def draw(self):
-        self.UIClass_obj.drawCircle(self.driver.screen, (255, 184, 82), (int(self.current_pix_pos.x), int(self.current_pix_pos.y)), self.radii)
+        self.UIClass_obj.drawCircle(self.driver.screen, self.UIClass_obj.orange, (int(self.current_pix_pos.x), int(self.current_pix_pos.y)), self.radii)
 
 class RedEnemy(Enemy):
     def draw(self):
-        self.UIClass_obj.drawCircle(self.driver.screen, (255, 0, 0), (int(self.current_pix_pos.x), int(self.current_pix_pos.y)), self.radii)
+        self.UIClass_obj.drawCircle(self.driver.screen, self.UIClass_obj.red, (int(self.current_pix_pos.x), int(self.current_pix_pos.y)), self.radii)
 
 
 class PinkEmemy(Enemy):
     def draw(self):
-        self.UIClass_obj.drawCircle(self.driver.screen, (255, 184, 255), (int(self.current_pix_pos.x), int(self.current_pix_pos.y)), self.radii)
+        self.UIClass_obj.drawCircle(self.driver.screen, self.UIClass_obj.pink, (int(self.current_pix_pos.x), int(self.current_pix_pos.y)), self.radii)
 
 class EnemyFactory():
     def CreateEnemy(self, type, driver, pos, name, bit_state):
-        if(type == "Blue"):
+        if (type == "Blue"):
             return BlueEnemy(driver, pos, name, bit_state)
-        elif(type=="Orange"):
+        elif (type == "Orange"):
             return OrangeEnemy(driver, pos, name, bit_state)
-        elif(type=="Red"):
+        elif (type == "Red"):
             return RedEnemy(driver, pos, name, bit_state)
-        elif(type=="Pink"):
+        elif (type == "Pink"):
             return PinkEmemy(driver, pos, name, bit_state)
         #return None
-
-if __name__ == '__main__':
-    #instance = Enemy()
-    listChoice = [[1,0],[0,1],[-1,0],[0,-1]]
-    randomChoice = random.sample(listChoice,4)
-    print(vec(randomChoice[0],randomChoice[1]))

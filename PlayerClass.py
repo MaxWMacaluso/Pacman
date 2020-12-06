@@ -1,3 +1,7 @@
+########################################
+# NOTES BELOW #
+########################################
+
 #Utilizes the Singleton Design Pattern
 
 #In creation of this file, REFERENCED:
@@ -6,8 +10,16 @@
     #https://github.com/a-plus-coding/pacman-with-python
     #http://zetcode.com/javagames/pacman/
 
+########################################
+# IMPORTS BELOW #
+########################################
+
 #Import all from UIClass
 from UIClass import *
+
+########################################
+# SINGLETONPLAYER CLASS BELOW #
+########################################
 
 #Notes: 
     #Interesting note, theoretically, a SingletonPlayer instance would have no attributes (essentially null); however, static _instance is what is defined

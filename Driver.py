@@ -1,17 +1,41 @@
+########################################
+# NOTES BELOW #
+########################################
+
 #Utilizes the Observer Design Pattern
 
 #In creation of this file, REFERENCED:
     #https://www.youtube.com/watch?v=juSH7hmYUGA (timer tutorial)
     #https://docs.python.org/3/library/enum.html (Enums)
 
+########################################
+# IMPORTS BELOW #
+########################################
+
 #Import 3rd Party Libraries
 import sys
 import time
+from enum import Enum
 
 #Import all from PlayerClass, EnemyClass, and UIClass
 from PlayerClass import *
 from EnemyClass import *
 from UIClass import *
+
+########################################
+# ENUM BELOW #
+########################################
+
+#Notes:
+    #Used to keep track of the game state
+class Color(Enum):
+    RED = 1
+    GREEN = 2
+    BLUE = 3
+
+########################################
+# DRIVER CLASS BELOW #
+########################################
 
 #Notes:
     #Below is the main Driver Class
@@ -110,7 +134,7 @@ class Driver:
         board_width = self.UIClass_obj.board_width
         board_height = self.UIClass_obj.board_height
 
-        self.background = self.UIClass_obj.loadImg('bg.png')
+        self.background = self.UIClass_obj.loadBgImg('bg.png')
         self.background = self.UIClass_obj.scaleImg(self.background, board_width, board_height)
 
         # Create the playable board using the walls.txt file
@@ -157,7 +181,7 @@ class Driver:
             self.UIClass_obj.drawCircle(surface, self.UIClass_obj.coin_color, center, width)
 
 
-    # We create enemies using a enemy factory from the enemy class
+    # Create enemies using Simple Factory (from EnemyClass.py)
     def populateEnemies(self):
 
         # Create an enemy factory object
@@ -434,6 +458,10 @@ class Driver:
 
         # Set the game state to playing
         self.state = "playing"
+
+########################################
+# OBSERVER BELOW #
+########################################
 
 # This observer will help declare any text during the game such as: Score, Time, Lives, and menus.
 class observerMethod():
