@@ -50,8 +50,39 @@ class UIClass:
     def drawCircle(self, surface, color, center, width):
         pygame.draw.circle(surface, color, center, width)
 
+    # rect = [left, top, width, height]
+    # 4 input params:
+        # screen, color, (x,y,width,height), thickness
     def drawRect(self, surface, color, rect):
         pygame.draw.rect(surface, color, rect)
+
+    #Method to display which key is pressed
+    def drawArrowKeys(self, pressed_key, surface, x, y, width, height):
+        if pressed_key == "up":
+            pygame.draw.rect(surface, self.grey, (x, y, width, height)) #Left button
+            pygame.draw.rect(surface, self.grey, (x + 30, y, width, height)) #Right button
+            pygame.draw.rect(surface, self.white, (x + 15, y - 30, width, height)) #UP button
+            pygame.draw.rect(surface, self.grey, (x + 15, y + 30, width, height)) #Down button
+        elif pressed_key == "down": 
+            pygame.draw.rect(surface, self.grey, (x, y, width, height)) #Left button
+            pygame.draw.rect(surface, self.grey, (x + 30, y, width, height)) #Right button
+            pygame.draw.rect(surface, self.grey, (x + 15, y - 30, width, height)) #Up button
+            pygame.draw.rect(surface, self.white, (x + 15, y + 30, width, height)) #DOWN button
+        elif pressed_key == "left": 
+            pygame.draw.rect(surface, self.white, (x, y, width, height)) #LEFT button
+            pygame.draw.rect(surface, self.grey, (x + 30, y, width, height)) #Right button
+            pygame.draw.rect(surface, self.grey, (x + 15, y - 30, width, height)) #Up button
+            pygame.draw.rect(surface, self.grey, (x + 15, y + 30, width, height)) #Down button
+        elif pressed_key == "right": 
+            pygame.draw.rect(surface, self.grey, (x, y, width, height)) #Left button
+            pygame.draw.rect(surface, self.white, (x + 30, y, width, height)) #RIGHT button
+            pygame.draw.rect(surface, self.grey, (x + 15, y - 30, width, height)) #Up button
+            pygame.draw.rect(surface, self.grey, (x + 15, y + 30, width, height)) #Down button
+        else:
+            pygame.draw.rect(surface, self.grey, (x, y, width, height)) #Left button
+            pygame.draw.rect(surface, self.grey, (x + 30, y, width, height)) #Right button
+            pygame.draw.rect(surface, self.grey, (x + 15, y - 30, width, height)) #Up button
+            pygame.draw.rect(surface, self.grey, (x + 15, y + 30, width, height)) #Down button
 
     def setMode(self):
         return (pygame.display.set_mode((self.window_width, self.window_height)))

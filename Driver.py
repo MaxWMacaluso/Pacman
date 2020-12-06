@@ -33,6 +33,16 @@ class GameState(Enum):
     PLAYING = 1
     GAME_OVER = 2
 
+#Notes:
+    #Used to translate the internal representation of the board, boardWalls.txt into what the user/client sees
+    #Not really an enum but a Class where all attributes are static
+class boardWalls:
+    WALL = "1"
+    COIN = "C"
+    PLAYER = "P"
+    ENEMY = ["2", "3", "4", "5"]
+    BACKGROUND = "B"
+
 ########################################
 # DRIVER CLASS BELOW #
 ########################################
@@ -89,6 +99,12 @@ class Driver:
         self.startTime = time.time()
         self.elapsedTime = 0
 
+        # To keep track of which arrow-key is pressed for display purposes
+        self.is_down = False
+        self.is_up = False
+        self.is_left = False
+        self.is_right = False
+
     # Begin playing the game
     def runGame(self):
 
@@ -137,7 +153,7 @@ class Driver:
         self.background = self.UIClass_obj.loadBgImg('bg.png')
         self.background = self.UIClass_obj.scaleImg(self.background, board_width, board_height)
 
-        # Create the playable board using the walls.txt file
+        # Create the playable board using the boardWalls.txt file
         with open("boardWalls.txt", 'r') as file:
 
             # For each row in the file, we need to go through and see what each item is
@@ -147,24 +163,24 @@ class Driver:
                 for x, col in enumerate(row):
 
                     # If the value is a 1, it's a wall
-                    if col == "1":
+                    if col == boardWalls.WALL:
                         self.walls.append(vec(x, y))
 
                     # If the value is a C, it's a coin
-                    elif col == "C":
+                    elif col == boardWalls.COIN:
                         self.coins.append(vec(x, y))
                         self.scorecap += 1
 
                     # If the value is a P, it's a player
-                    elif col == "P":
+                    elif col == boardWalls.PLAYER:
                         self.player_position = [x, y]
 
                     # If the value is 2, 3, 4, or 5, it's an enemy
-                    elif col in ["2", "3", "4", "5"]:
+                    elif col in boardWalls.ENEMY:
                         self.enemy_positions.append([x, y])
 
                     # If the value is a B, then it's the background
-                    elif col == "B":
+                    elif col == boardWalls.BACKGROUND:
                         black = self.UIClass_obj.black
                         self.UIClass_obj.drawRect(self.background, black, (x * self.cell_width, y * self.cell_height, self.cell_width, self.cell_height))
 
@@ -221,7 +237,6 @@ class Driver:
 
     # Draw the board
     def programDraw(self):
-
         self.screen.fill(self.UIClass_obj.black)
         window_width = self.UIClass_obj.window_width
         window_height = self.UIClass_obj.window_height
@@ -250,25 +265,59 @@ class Driver:
             # If the event is a keystroke
             if event.type == pygame.KEYDOWN:
 
-                # If the inputted keystroke is a left key, the player should move left
+                # If the inputted keystroke is a left key, the player should move left and update button pressed display
                 if event.key == pygame.K_LEFT:
                     self.player.movePlayer(vec(-1, 0))
+                    self.updateArrowPressed("left")
 
-                # If the inputted keystroke is a right key, the player should be moved right
+                # If the inputted keystroke is a right key, the player should be moved right and update button pressed display
                 if event.key == pygame.K_RIGHT:
                     self.player.movePlayer(vec(1, 0))
+                    self.updateArrowPressed("right")
 
-                # If the inputted keystroke is a up key, the player should be moved up
+                # If the inputted keystroke is a up key, the player should be moved up and update button pressed display
                 if event.key == pygame.K_UP:
                     self.player.movePlayer(vec(0, -1))
+                    self.updateArrowPressed("up")
 
-                # If the inputted keystroke is a down key, the player should be moved down
+                # If the inputted keystroke is a down key, the player should be moved down and update button pressed display
                 if event.key == pygame.K_DOWN:
                     self.player.movePlayer(vec(0, 1))
+                    self.updateArrowPressed("down")
 
-            # If the event is to quit the game, set the playing state to False
+            # If the event is to quit the game, set the playing state to False and update button pressed display
             if event.type == pygame.QUIT:
                 self.playing = False
+
+    #Helper method to set which key is pressed for update button pressed display
+        #Sets inputted value to be true and other 3 directions to False
+    def updateArrowPressed(self, dir):
+        if dir == "left":
+            self.is_left = True
+            self.is_right, self.is_down, self.is_up = (False, False, False)
+        elif dir == "right":
+            self.is_right = True
+            self.is_left, self.is_down, self.is_up = (False, False, False)
+        elif dir == "up":
+            self.is_up = True
+            self.is_right, self.is_down, self.is_left = (False, False, False)
+        else:
+            self.is_down = True
+            self.is_right, self.is_up, self.is_left = (False, False, False)
+
+    #Helper method to get which key is pressed for update button pressed display 
+        #Returns string: "left", "right", "up", "down", "none"
+    def getArrowPressed(self):
+        if self.is_down:
+            return "down"
+        elif self.is_up:
+            return "up"
+        elif self.is_left:
+            return "left"
+        elif self.is_right:
+            return "right"
+        else:
+            return "none"
 
     # Update while playing
     def currentUpdates(self):
@@ -303,16 +352,21 @@ class Driver:
         announceObserver = observerMethod()
 
         # Display the score, time, and lives while the game is being played
-        announceObserver.observerDisplay("SCORE: " + str(self.player.current_score), self.screen, [60, 0], self.UIClass_obj.game_text_size, self.UIClass_obj.blue, self.UIClass_obj.start_font_style)
-        announceObserver.observerDisplay("Time: " + str(self.elapsedTime), self.screen, [self.UIClass_obj.window_width // 2 + 60, 0], self.UIClass_obj.game_text_size, self.UIClass_obj.blue, self.UIClass_obj.start_font_style)
-        announceObserver.observerDisplay("Lives: " + str(self.numLives), self.screen, [self.UIClass_obj.window_width // 4 + 60, 0], self.UIClass_obj.game_text_size, self.UIClass_obj.blue, self.UIClass_obj.start_font_style)
+        announceObserver.observerDisplay("Lives: " + str(self.numLives), self.screen, [60, 0], self.UIClass_obj.game_text_size, self.UIClass_obj.blue, self.UIClass_obj.start_font_style)
+        announceObserver.observerDisplay("Time: " + str(self.elapsedTime), self.screen, [self.UIClass_obj.window_width // 4 + 60, 0], self.UIClass_obj.game_text_size, self.UIClass_obj.blue, self.UIClass_obj.start_font_style)
+        announceObserver.observerDisplay("Score: " + str(self.player.current_score), self.screen, [self.UIClass_obj.window_width // 2 + 60, 0], self.UIClass_obj.game_text_size, self.UIClass_obj.blue, self.UIClass_obj.start_font_style)
 
         # Draw the player
         self.player.drawPlayer()
 
+        # Draw the current button pressed
+        announceObserver.observerDisplay("Button Pressed:", self.screen, [5, 250], 14, self.UIClass_obj.white, self.UIClass_obj.start_font_style)
+        pressed_key = self.getArrowPressed()
+        self.UIClass_obj.drawArrowKeys(pressed_key, self.screen, 35, 310, 25, 20)
+
         # Draw each enemy
-        for x in self.enemy_list:
-            x.draw()
+        for enemy in self.enemy_list:
+            enemy.draw()
 
         # Display the update
         self.UIClass_obj.updateDisplay()
@@ -444,7 +498,7 @@ class Driver:
             for y, line in enumerate(file):
                 for x, char in enumerate(line):
                     #On a coin so add it
-                    if char == 'C':
+                    if char == boardWalls.COIN:
                         self.coins.append(vec(x, y))
 
         # Set the game state to playing
