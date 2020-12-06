@@ -2,6 +2,7 @@
 
 #In creation of this file, REFERENCED:
     #https://www.youtube.com/watch?v=juSH7hmYUGA (timer tutorial)
+    #https://docs.python.org/3/library/enum.html (Enums)
 
 #Import 3rd Party Libraries
 import sys
@@ -65,7 +66,7 @@ class Driver:
         self.elapsedTime = 0
 
     # Begin playing the game
-    def game(self):
+    def runGame(self):
 
         # While the game is being played
         while self.playing:
@@ -144,11 +145,16 @@ class Driver:
                         self.UIClass_obj.drawRect(self.background, black, (x * self.cell_width, y * self.cell_height, self.cell_width, self.cell_height))
 
     # Display the coins as a circle
-    def coin_display(self):
+    def coinDisplay(self):
+        
+        #Define outside of loop because they are constant
+        surface = self.screen
+        width = 5
 
-        # For each coin in the coin list, draw the coin
+        #For each coin in the coin list, draw the coin
         for coin in self.coins:
-            pygame.draw.circle(self.screen, (124, 123, 10), (int(coin.x * self.cell_width) + self.cell_width // 2 + self.UIClass_obj.margin // 2, int(coin.y * self.cell_height) + self.cell_height // 2 + self.UIClass_obj.margin // 2), 5)
+            center = (int(coin.x * self.cell_width) + self.cell_width // 2 + self.UIClass_obj.margin // 2, int(coin.y * self.cell_height) + self.cell_height // 2 + self.UIClass_obj.margin // 2)
+            self.UIClass_obj.drawCircle(surface, self.UIClass_obj.coin_color, center, width)
 
 
     # We create enemies using a enemy factory from the enemy class
@@ -270,7 +276,7 @@ class Driver:
         self.screen.blit(self.background, (self.UIClass_obj.margin // 2, self.UIClass_obj.margin // 2))
 
         # Draw the coins while the game is being played
-        self.coin_display()
+        self.coinDisplay()
 
         # Create the announcing observer
         announceObserver = observerMethod()
@@ -363,8 +369,8 @@ class Driver:
 
         # Display the end game menu texts
         announceObserver.observerDisplay("GAME OVER", self.screen, [window_width // 2, window_height // 2 - 150],  52, self.UIClass_obj.red,  "arial", centered = True)
-        announceObserver.observerDisplay("Press SPACE to play again.", self.screen, [window_width // 2, window_height // 2 - 50],  36, (190, 190, 190), "arial", centered = True)
-        announceObserver.observerDisplay("Press ESCAPE to quit the game.", self.screen, [window_width // 2, window_height // 2 - 10],  36, (190, 190, 190), "arial", centered = True)
+        announceObserver.observerDisplay("Play Again: SPACE", self.screen, [window_width // 2, window_height // 2 - 50],  36, (190, 190, 190), "arial", centered = True)
+        announceObserver.observerDisplay("Quit Game: ESCAPE", self.screen, [window_width // 2, window_height // 2 - 10],  36, (190, 190, 190), "arial", centered = True)
 
         # Score text
         announceObserver.observerDisplay('Score: {}'.format(self.player.returnScore()), self.screen, [window_width // 2, window_height // 2 + 90],  36, (190, 190, 190), "arial", centered = True)
@@ -443,10 +449,10 @@ class observerMethod():
 
         screen.blit(pygame.font.SysFont(font_name, size).render(words, False, color), pos)
 
-    ########################################
-    # DRIVER BELOW #
-    ########################################
+########################################
+# DRIVER BELOW #
+########################################
 
 if __name__ == '__main__':
     pygame.init()
-    Driver().game()
+    Driver().runGame()

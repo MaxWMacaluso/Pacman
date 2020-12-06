@@ -7,6 +7,7 @@ class UIClass:
     def __init__(self):
         #COLORS
         self.player_color = (190, 194, 15)
+        self.coin_color = (124, 123, 10)
         self.red = (208, 22, 22)
         self.white = (255, 255, 255)
         self.grey = (107, 107, 107)
