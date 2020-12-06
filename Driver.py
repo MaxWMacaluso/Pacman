@@ -28,10 +28,10 @@ from UIClass import *
 
 #Notes:
     #Used to keep track of the game state
-class Color(Enum):
-    RED = 1
-    GREEN = 2
-    BLUE = 3
+class GameState(Enum):
+    START = 0
+    PLAYING = 1
+    GAME_OVER = 2
 
 ########################################
 # DRIVER CLASS BELOW #
@@ -57,7 +57,7 @@ class Driver:
         self.playing = True
 
         # Set the game state to 'start'
-        self.state = 'start'
+        self.state = GameState.START
 
         # Set the size of the cell based on the UIClass.py file
         self.cell_width = self.UIClass_obj.board_width // self.UIClass_obj.columns
@@ -96,14 +96,14 @@ class Driver:
         while self.playing:
 
             # If it is the start of the game
-            if self.state == 'start':
+            if self.state == GameState.START:
 
                 # Run the events class which corresponds to starting the program
                 self.programStart()
                 self.programDraw()
 
             # If it is currently during the game
-            elif self.state == 'playing':
+            elif self.state == GameState.PLAYING:
 
                 # Run the classes which corresponds to currently playing the game
                 self.currentlyPlaying()
@@ -114,7 +114,7 @@ class Driver:
                 self.elapsedTime = int(time.time() - self.startTime)
 
             # If it is the end of the game
-            elif self.state == 'game over':
+            elif self.state == GameState.GAME_OVER:
 
                 # Run the events class which corresponds to ending the program
                 self.endGame()
@@ -218,7 +218,7 @@ class Driver:
 
             # If the user inputs a key, start the game
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                self.state = 'playing'
+                self.state = GameState.PLAYING
 
     # Draw the board
     def programDraw(self):
@@ -290,7 +290,7 @@ class Driver:
                 self.decrementLives()
 
         if self.player.returnScore() == self.scorecap:
-            self.state = "game over"
+            self.state = GameState.GAME_OVER
 
     # Draw the board during the game
     def currentDrawing(self):
@@ -331,7 +331,7 @@ class Driver:
 
         # If the player has no lives, set the game state to over
         if self.numLives == 0:
-            self.state = "game over"
+            self.state = GameState.GAME_OVER
 
         # If the player still has lives
         else:
@@ -447,17 +447,15 @@ class Driver:
 
         # Reset the coin locations using the text file
         with open("board_walls.txt", 'r') as file:
-
+            #Traverse the file
             for y, line in enumerate(file):
-
                 for x, char in enumerate(line):
-
+                    #On a coin so add it
                     if char == 'C':
-
                         self.coins.append(vec(x, y))
 
         # Set the game state to playing
-        self.state = "playing"
+        self.state = GameState.PLAYING
 
 ########################################
 # OBSERVER BELOW #
