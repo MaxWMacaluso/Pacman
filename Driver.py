@@ -23,7 +23,7 @@ from EnemyClass import *
 from UIClass import *
 
 ########################################
-# ENUM BELOW #
+# ENUMS BELOW #
 ########################################
 
 #Notes:
@@ -138,7 +138,7 @@ class Driver:
         self.background = self.UIClass_obj.scaleImg(self.background, board_width, board_height)
 
         # Create the playable board using the walls.txt file
-        with open("board_walls.txt", 'r') as file:
+        with open("boardWalls.txt", 'r') as file:
 
             # For each row in the file, we need to go through and see what each item is
             for y, row in enumerate(file):
@@ -209,7 +209,6 @@ class Driver:
 
     # Program start event
     def programStart(self):
-
         for event in pygame.event.get():
 
             # If the game is quit, set the playing state to False
@@ -232,12 +231,12 @@ class Driver:
         # Create the announcing observer
         announceObserver = observerMethod()
 
-        # Tell the player what button to push to start playing
-        announceObserver.observerDisplay('Press SPACE to start', self.screen, [window_width // 2, window_height // 2 - 75], 35, (170, 132, 58), font_style, centered=True)
-
         # Display Our Team Info
-        announceObserver.observerDisplay('Pac Man Recreation', self.screen, [window_width // 2, window_height // 2 + 25], 25, (44, 167, 198), font_style, centered=True)
-        announceObserver.observerDisplay('Max Macaluso, Rohan Suri, Sahib Bajwa', self.screen, [window_width // 2, window_height // 2 + 75], text_size, (55, 155, 98), font_style, centered=True)
+        announceObserver.observerDisplay('Pac Man Recreation', self.screen, [window_width // 2, window_height // 2 - 75], text_size, self.UIClass_obj.blue, font_style, centered = True)
+        announceObserver.observerDisplay('Max Macaluso, Rohan Suri, Sahib Bajwa', self.screen, [window_width // 2, window_height // 2 + 25], text_size, self.UIClass_obj.orange, font_style, centered = True)
+
+        # Tell the player what button to push to start playing
+        announceObserver.observerDisplay('Start: SPACE', self.screen, [window_width // 2, window_height // 2 + 125], text_size, self.UIClass_obj.white, font_style, centered = True)
 
         # Update the display
         self.UIClass_obj.updateDisplay()
@@ -276,8 +275,6 @@ class Driver:
 
         # Update the player's state
         self.player.updatePlayerState()
-
-        # TODO: Update each enemy's state (not working)
         for x in self.enemy_list:
             x.updateEnemyState()
             # self.player.alterScore(1000)
@@ -305,13 +302,10 @@ class Driver:
         # Create the announcing observer
         announceObserver = observerMethod()
 
-        # Display the score while the game is being played
-        announceObserver.observerDisplay('SCORE: {}'.format(self.player.current_score), self.screen, [60, 0], 18, self.UIClass_obj.white, self.UIClass_obj.start_font_style)
-
-        # Display the timer in seconds while the game is being played
-        announceObserver.observerDisplay('Time: {}'.format(self.elapsedTime), self.screen, [self.UIClass_obj.window_width // 2 + 60, 0], 18, self.UIClass_obj.white, self.UIClass_obj.start_font_style)
-
-        announceObserver.observerDisplay('Lives: {}'.format(self.numLives), self.screen, [self.UIClass_obj.window_width // 4 + 60, 0], 18, self.UIClass_obj.white, self.UIClass_obj.start_font_style)
+        # Display the score, time, and lives while the game is being played
+        announceObserver.observerDisplay("SCORE: " + str(self.player.current_score), self.screen, [60, 0], self.UIClass_obj.game_text_size, self.UIClass_obj.blue, self.UIClass_obj.start_font_style)
+        announceObserver.observerDisplay("Time: " + str(self.elapsedTime), self.screen, [self.UIClass_obj.window_width // 2 + 60, 0], self.UIClass_obj.game_text_size, self.UIClass_obj.blue, self.UIClass_obj.start_font_style)
+        announceObserver.observerDisplay("Lives: " + str(self.numLives), self.screen, [self.UIClass_obj.window_width // 4 + 60, 0], self.UIClass_obj.game_text_size, self.UIClass_obj.blue, self.UIClass_obj.start_font_style)
 
         # Draw the player
         self.player.drawPlayer()
@@ -344,8 +338,7 @@ class Driver:
 
             # Set the direction of the player to no direction
             self.player.resetDirection()
-
-            # TODO: Reset all of the enemy positions (Rohan)
+            
             for x in self.enemy_list:
 
                 # Set the grid position of the enemy to the starting position
@@ -391,17 +384,19 @@ class Driver:
         # Create the announcing observer
         announceObserver = observerMethod()
 
-        # Display the end game menu texts
-        announceObserver.observerDisplay("GAME OVER", self.screen, [window_width // 2, window_height // 2 - 150],  52, self.UIClass_obj.red,  "arial", centered = True)
-        announceObserver.observerDisplay("Play Again: SPACE", self.screen, [window_width // 2, window_height // 2 - 50],  36, (190, 190, 190), "arial", centered = True)
-        announceObserver.observerDisplay("Quit Game: ESCAPE", self.screen, [window_width // 2, window_height // 2 - 10],  36, (190, 190, 190), "arial", centered = True)
+        announceObserver.observerDisplay("GAME OVER", self.screen, [window_width // 2, window_height // 2 - 250],  self.UIClass_obj.end_screen_text_size, self.UIClass_obj.red,  self.UIClass_obj.start_font_style, centered = True)
 
-        # Score text
-        announceObserver.observerDisplay('Score: {}'.format(self.player.returnScore()), self.screen, [window_width // 2, window_height // 2 + 90],  36, (190, 190, 190), "arial", centered = True)
-
-        # Timer text
+        # Score and Timer text
+        announceObserver.observerDisplay("Score: " + str(self.player.returnScore()), self.screen, [window_width // 2, window_height // 2 + 90],  self.UIClass_obj.end_screen_text_size, self.UIClass_obj.blue, "arial", centered = True)
         elapsedTime2 = str(self.elapsedTime)
-        announceObserver.observerDisplay('Time: {} seconds'.format(elapsedTime2), self.screen, [window_width // 2, window_height // 2 + 130],  36, (190, 190, 190), "arial", centered = True)
+        announceObserver.observerDisplay("Time: " + str(elapsedTime2) + " Seconds", self.screen, [window_width // 2, window_height // 2 + 130],  self.UIClass_obj.end_screen_text_size, self.UIClass_obj.blue, "arial", centered = True)
+
+        # Display the end game options
+        announceObserver.observerDisplay("Play Again: SPACE", self.screen, [window_width // 2, window_height // 2 - 50],  self.UIClass_obj.end_screen_text_size, self.UIClass_obj.white, self.UIClass_obj.start_font_style, centered = True)
+        announceObserver.observerDisplay("Quit Game: ESCAPE", self.screen, [window_width // 2, window_height // 2 - 10],  self.UIClass_obj.end_screen_text_size, self.UIClass_obj.white, self.UIClass_obj.start_font_style, centered = True)
+
+        # Display thank you message
+        announceObserver.observerDisplay("Thank you for playing!", self.screen, [window_width // 2, window_height // 2 - 150],  self.UIClass_obj.end_screen_text_size, self.UIClass_obj.orange, self.UIClass_obj.start_font_style, centered = True)
 
         # Update the display
         pygame.display.update()
@@ -423,8 +418,6 @@ class Driver:
 
         # Set the character's moving/facing direction to nothing
         self.player.resetDirection()
-
-        # TODO: Set the enemies back to the starting position (Rohan)
         for x in self.enemy_list:
 
             # Set the enemy's back to the starting location
@@ -446,7 +439,7 @@ class Driver:
         self.startTime = time.time()
 
         # Reset the coin locations using the text file
-        with open("board_walls.txt", 'r') as file:
+        with open("boardWalls.txt", 'r') as file:
             #Traverse the file
             for y, line in enumerate(file):
                 for x, char in enumerate(line):

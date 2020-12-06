@@ -42,7 +42,9 @@ class UIClass:
         self.columns = 28
 
         #FONT 
-        self.start_screen_text_size = 18
+        self.start_screen_text_size = 24
+        self.game_text_size = 18
+        self.end_screen_text_size = 36
         self.start_font_style = 'arial black'
 
     def drawCircle(self, surface, color, center, width):
