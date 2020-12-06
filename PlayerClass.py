@@ -1,14 +1,17 @@
 #Utilizes the Singleton Design Pattern
+
 #In creation of this file, REFERENCED:
     #https://python-patterns.guide/gang-of-four/singleton/
     #https://www.cse.wustl.edu/~garnett/cse511a/code/project2/pacman_py.html
     #https://github.com/a-plus-coding/pacman-with-python
     #http://zetcode.com/javagames/pacman/
 
+#Import all from UIClass
 from UIClass import *
 
-#Interesting note, theoretically, a SingletonPlayer instance would have no attributes (essentially null); however, static _instance is what is defined.
-#This is why self.[attributes] does not work
+#Notes: 
+    #Interesting note, theoretically, a SingletonPlayer instance would have no attributes (essentially null); however, static _instance is what is defined
+    #This is why self.[attributes] does not work
 class SingletonPlayer:
     #Static Singleton instance
     _instance = None

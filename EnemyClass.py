@@ -1,10 +1,19 @@
-import random
+#Utilizes the Simple Factory Design Pattern
 
-from UIClass import *
+#In creation of this file, REFERENCED:
+    #https://pypi.org/project/pathfinding/
+
+#Import 3rd Party Libraries
+import random
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
-#enemy bit states 0 is fast pursuit, 1 is slow pursuit, 2 is targeted 3 is random
+
+#Import all from UIClass
+from UIClass import *
+
+#Notes: 
+    #Enemy bit states 0 is fast pursuit, 1 is slow pursuit, 2 is targeted 3 is random
 class Enemy:
     def __init__(self, driver, pos, name, bit_state):
         self.UIClass_obj = UIClass() #Make a new instance of UIClass

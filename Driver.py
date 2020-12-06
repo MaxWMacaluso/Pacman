@@ -1,14 +1,19 @@
-# Timer tutorial: https://www.youtube.com/watch?v=juSH7hmYUGA
+#Utilizes the Observer Design Pattern
 
+#In creation of this file, REFERENCED:
+    #https://www.youtube.com/watch?v=juSH7hmYUGA (timer tutorial)
+
+#Import 3rd Party Libraries
 import sys
+import time
 
+#Import all from PlayerClass, EnemyClass, and UIClass
 from PlayerClass import *
 from EnemyClass import *
 from UIClass import *
 
-import time
-
-# Create the Driver class
+#Notes:
+    #Below is the main Driver Class
 class Driver:
 
     # Constructor
