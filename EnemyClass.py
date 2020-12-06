@@ -139,8 +139,9 @@ class Enemy:
 
     def updateEnemyState(self):
         self.player_target = self.getTarget()
-        if self.setCurrentPixPos() == True:
-            if self.canMove == True:
+        if self.player_target != self.current_grid_pos:
+            self.current_pix_pos += self.direction * self.speed
+            if self.canMove():
                 self.enemyMove()
         self.pixPos_To_GridPos_X()
         self.pixPos_To_GridPos_Y()

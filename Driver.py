@@ -50,6 +50,7 @@ class Driver:
 
         # Create our new player
         self.player = SingletonPlayer.getInstance(self, vec(self.player_position))
+        self.player.resetDirection()
 
         # Populate our enemies array by creating enemies
         self.populateEnemies()
@@ -241,9 +242,10 @@ class Driver:
         # Update the player's state
         self.player.updatePlayerState()
 
-        # TODO: Update each enemy's state (Rohan)
+        # TODO: Update each enemy's state (not working)
         for x in self.enemy_list:
             x.updateEnemyState()
+            # self.player.alterScore(1000)
 
         # If the player and an enemy are in the same place, that means the player has died
         for x in self.enemy_list:
@@ -309,16 +311,16 @@ class Driver:
             self.player.resetDirection()
 
             # TODO: Reset all of the enemy positions (Rohan)
-            for enemy in self.enemy_list:
+            for x in self.enemy_list:
 
                 # Set the grid position of the enemy to the starting position
-                enemy.grid_pos = vec(enemy.starting_pos)
+                x.current_grid_pos = vec(x.starting_pos)
 
                 # Set the pixel position of the of the enemy to the starting position
-                enemy.pix_pos = enemy.getPixPos()
+                x.current_pix_pos = x.getPixPos()
 
                 # Set the direction of the player to no direction
-                enemy.direction *= 0
+                x.direction *= 0
 
     # Event for when the game is over
     def endGame(self):
@@ -391,10 +393,10 @@ class Driver:
         for x in self.enemy_list:
 
             # Set the enemy's back to the starting location
-            x.grid_pos = vec(x.starting_pos)
+            x.current_grid_pos = vec(x.starting_pos)
 
             # Set the enemy's pixel position back to the starting position
-            x.pix_pos = x.getPixPos()
+            x.current_pix_pos = x.getPixPos()
 
             # Set the enemy's moving/facing direction to nothing
             x.direction *= 0
