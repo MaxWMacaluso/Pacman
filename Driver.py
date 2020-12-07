@@ -41,7 +41,7 @@ class GameState(Enum):
     #Used to translate the internal representation of the board, boardWalls.txt into what the user/client sees
     #Not really an enum but a Class where all attributes are static
 class boardWalls:
-    WALL = "1"
+    WALL = "W"
     COIN = "C"
     PLAYER = "P"
     ENEMY = ["2", "3", "4", "5"]
