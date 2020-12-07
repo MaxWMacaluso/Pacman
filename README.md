@@ -19,7 +19,6 @@
 * https://www.youtube.com/watch?v=juSH7hmYUGA (Timer Tutorial)
 * https://docs.python.org/3/library/enum.html (Enum Tutorial)
 * https://pypi.org/project/pathfinding/ (Path-finding Library/Tutorial)
-* http://www.grantjenks.com/docs/freegames/pacman.html (Referenced Code)
 * https://python-patterns.guide/gang-of-four/singleton/ (Singleton Pattern Tutorial)
 * https://www.cse.wustl.edu/~garnett/cse511a/code/project2/pacman_py.html (Referenced Code)
 * https://github.com/a-plus-coding/pacman-with-python (Internal board representation and background image)
