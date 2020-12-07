@@ -251,7 +251,7 @@ class Driver:
         announceObserver = observerMethod()
 
         # Display Our Team Info
-        announceObserver.observerDisplay('Pac Man Recreation', self.screen, [window_width // 2, window_height // 2 - 75], text_size, self.UIClass_obj.blue, font_style, centered = True)
+        announceObserver.observerDisplay('Pac-Man Recreation', self.screen, [window_width // 2, window_height // 2 - 75], text_size, self.UIClass_obj.blue, font_style, centered = True)
         announceObserver.observerDisplay('Max Macaluso, Rohan Suri, Sahib Bajwa', self.screen, [window_width // 2, window_height // 2 + 25], text_size, self.UIClass_obj.orange, font_style, centered = True)
 
         # Tell the player what button to push to start playing
@@ -356,9 +356,9 @@ class Driver:
         announceObserver = observerMethod()
 
         # Display the score, time, and lives while the game is being played
-        announceObserver.observerDisplay("Lives: " + str(self.numLives), self.screen, [60, 0], self.UIClass_obj.game_text_size, self.UIClass_obj.blue, self.UIClass_obj.start_font_style)
-        announceObserver.observerDisplay("Time: " + str(self.elapsedTime), self.screen, [self.UIClass_obj.window_width // 4 + 60, 0], self.UIClass_obj.game_text_size, self.UIClass_obj.blue, self.UIClass_obj.start_font_style)
-        announceObserver.observerDisplay("Score: " + str(self.player.current_score), self.screen, [self.UIClass_obj.window_width // 2 + 60, 0], self.UIClass_obj.game_text_size, self.UIClass_obj.blue, self.UIClass_obj.start_font_style)
+        announceObserver.observerDisplay("Lives: " + str(self.numLives), self.screen, [150, 0], self.UIClass_obj.game_text_size, self.UIClass_obj.blue, self.UIClass_obj.start_font_style)
+        announceObserver.observerDisplay("Time: " + str(self.elapsedTime), self.screen, [270, 0], self.UIClass_obj.game_text_size, self.UIClass_obj.blue, self.UIClass_obj.start_font_style)
+        announceObserver.observerDisplay("Score: " + str(self.player.current_score), self.screen, [390, 0], self.UIClass_obj.game_text_size, self.UIClass_obj.blue, self.UIClass_obj.start_font_style)
 
         # Draw the player
         self.player.drawPlayer()
