@@ -1,4 +1,4 @@
-#Utilizes the Observer Design Pattern
+#Utilizes the Observer Design Pattern found in ObserverClass.py
 
 ########################################
 # NOTES BELOW #
@@ -15,11 +15,14 @@
 #Import 3rd Party Libraries
 import sys
 import time
+import pygame
 from enum import Enum
 
-#Import all from PlayerClass, EnemyClass, and UIClass
+#Import all from ObserverClass.py PlayerClass, EnemyClass, EnemyFactory and UIClass
+from ObserverClass import *
 from PlayerClass import *
 from EnemyClass import *
+from EnemyFactory import *
 from UIClass import *
 
 ########################################
@@ -66,7 +69,7 @@ class Driver:
         # Set the playing state to True
         self.playing = True
 
-        # Set the game state to 'start'
+        # Set the game state to start
         self.state = GameState.START
 
         # Set the size of the cell based on the UIClass.py file
@@ -78,8 +81,8 @@ class Driver:
         self.enemy_list = []
         self.enemy_positions = []
         self.coins = []
-        self.scorecap = 0
 
+        self.scorecap = 0
         self.numLives = 3
 
         # Create the player's position to start and where it will be updated over time
@@ -161,21 +164,21 @@ class Driver:
 
                 # Check what the item is
                 for x, col in enumerate(row):
-
-                    # If the value is a 1, it's a wall
+                    
+                    #Wall
                     if col == boardWalls.WALL:
                         self.walls.append(vec(x, y))
 
-                    # If the value is a C, it's a coin
+                    #Coin
                     elif col == boardWalls.COIN:
                         self.coins.append(vec(x, y))
                         self.scorecap += 1
 
-                    # If the value is a P, it's a player
+                    #Player
                     elif col == boardWalls.PLAYER:
                         self.player_position = [x, y]
 
-                    # If the value is 2, 3, 4, or 5, it's an enemy
+                    #Enemy
                     elif col in boardWalls.ENEMY:
                         self.enemy_positions.append([x, y])
 
@@ -232,7 +235,7 @@ class Driver:
                 self.playing = False
 
             # If the user inputs a key, start the game
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+            if event.type == pygame.KEYDOWN:
                 self.state = GameState.PLAYING
 
     # Draw the board
@@ -251,7 +254,7 @@ class Driver:
         announceObserver.observerDisplay('Max Macaluso, Rohan Suri, Sahib Bajwa', self.screen, [window_width // 2, window_height // 2 + 25], text_size, self.UIClass_obj.orange, font_style, centered = True)
 
         # Tell the player what button to push to start playing
-        announceObserver.observerDisplay('Start: SPACE', self.screen, [window_width // 2, window_height // 2 + 125], text_size, self.UIClass_obj.white, font_style, centered = True)
+        announceObserver.observerDisplay('Start: ANY BUTTON', self.screen, [window_width // 2, window_height // 2 + 125], text_size, self.UIClass_obj.white, font_style, centered = True)
 
         # Update the display
         self.UIClass_obj.updateDisplay()
@@ -425,7 +428,7 @@ class Driver:
     def endGameUpdate(self):
         pass
 
-    # If the game is over, we create a end game menu
+    # If the game is over, we create an end game menu
     def endGameDraw(self):
 
         # Fill the entire window with a black background
@@ -503,24 +506,6 @@ class Driver:
 
         # Set the game state to playing
         self.state = GameState.PLAYING
-
-########################################
-# OBSERVER BELOW #
-########################################
-
-# This observer will help declare any text during the game such as: Score, Time, Lives, and menus.
-class observerMethod():
-
-    # Method that will be used declare any actions/changes that occur during the game.
-    def observerDisplay(self, words, screen, pos, size, color, font_name, centered=False):
-
-        # Set font, size, and color
-        # The text needs to be centered or it will not show up on the pygame window
-        if centered:
-            pos[0] = pos[0] - pygame.font.SysFont(font_name, size).render(words, False, color).get_size()[0] // 2
-            pos[1] = pos[1] - pygame.font.SysFont(font_name, size).render(words, False, color).get_size()[1] // 2
-
-        screen.blit(pygame.font.SysFont(font_name, size).render(words, False, color), pos)
 
 ########################################
 # DRIVER BELOW #

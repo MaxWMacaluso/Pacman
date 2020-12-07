@@ -1,11 +1,12 @@
-#Utilizes the Simple Factory Design Pattern
+#Utilizes the Simple Factory Design Pattern found in EnemyFactory.py
 
 ########################################
 # NOTES BELOW #
 ########################################
 
 #In creation of this file, REFERENCED:
-    #https://pypi.org/project/pathfinding/
+    #https://pypi.org/project/pathfinding/ (Path-finding)
+    #http://www.grantjenks.com/docs/freegames/pacman.html (referenced code)
 
 ########################################
 # IMPORTS BELOW #
@@ -33,33 +34,84 @@ class Enemy:
         self.enemy_bit_state = bit_state
         self.name = name
         self.current_grid_pos = pos
-        self.current_pix_pos = self.getPixPos();
+        self.current_pix_pos = self.getPixPos()
         self.starting_pos = [pos.x, pos.y]
         self.direction = vec(0,0)
         self.player_target = None
-        self.radii = int(self.driver.cell_width//2.3)
+        self.radii = int(self.driver.cell_width // 2.3)
         self.speed = self.getSpeed()
         
+    #Given the current grid position, calculate the pixel position
     def getPixPos(self):
         x = (self.current_grid_pos.x * self.driver.cell_width) + self.UIClass_obj.margin // 2 + self.driver.cell_width // 2
         y = (self.current_grid_pos.y * self.driver.cell_height) + self.UIClass_obj.margin // 2 + self.driver.cell_height // 2
         return vec(x,y)
-                   
+
+    #Primary Path-finding algorithm in use
+        #Utilizes A* Pathfinding Algorithm 
+        #Returns a path to follow
+    def AStarSearchEnemyTarget(self, start, target):
+        board = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0],
+        [0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,1,0],
+        [0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,1,0],
+        [0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,1,0],
+        [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
+        [0,1,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0],
+        [0,1,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0],
+        [0,1,1,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,1,1,0],
+        [0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0],
+        [0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0],
+        [0,0,0,0,0,0,1,0,0,1,1,1,1,1,1,1,1,1,1,0,0,1,0,0,0,0,0,0],
+        [0,0,0,0,0,0,1,0,0,1,0,0,0,1,1,0,0,0,1,0,0,1,0,0,0,0,0,0],
+        [0,0,0,0,0,0,1,0,0,1,0,5,1,1,1,1,4,0,1,0,0,1,0,0,0,0,0,0],
+        [0,0,0,0,0,0,1,1,1,1,0,1,1,1,1,1,1,0,1,1,1,1,0,0,0,0,0,0],
+        [0,0,0,0,0,0,1,0,0,1,0,2,1,1,1,1,3,0,1,0,0,1,0,0,0,0,0,0],
+        [0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0],
+        [0,0,0,0,0,0,1,0,0,1,1,1,1,1,1,1,1,1,1,0,0,1,0,0,0,0,0,0],
+        [0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0],
+        [0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0],
+        [0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0],
+        [0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,1,0],
+        [0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,1,0],
+        [0,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0],
+        [0,0,0,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,1,0,0,0],
+        [0,0,0,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,1,0,0,0],
+        [0,1,1,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,1,1,0],
+        [0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0],
+        [0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0],
+        [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+        #board = [[0 for x in range(28)] for x in range(30)]
+        grid = Grid(matrix = board)
+        begin = grid.node(start[0], start[1])
+        end = grid.node(target[0], target[1])
+        finder = AStarFinder(diagonal_movement = DiagonalMovement.never)
+        path, runs = finder.find_path(begin, end, grid)
+        #print('operations:', runs, 'path length:', len(path))
+        #print(path)
+        return path
+
+    #Helper method to return the speed depending on the bit_state        
     def getSpeed(self):
         if self.enemy_bit_state != 1:
             self.speed = 2
         else:
             self.speed = 1
-        return self.speed;
+        return self.speed
 
     def getTarget(self):
+        #Set these values to condense code
         rows = self.UIClass_obj.rows
         cols = self.UIClass_obj.columns
-        if self.enemy_bit_state == 0 or self.enemy_bit_state == 1:
+
+        if self.enemy_bit_state == 0:
+            return self.driver.player.current_grid_pos
+        elif self.enemy_bit_state == 1:
             return self.driver.player.current_grid_pos
         else:
             if self.driver.player.current_grid_pos[0] > cols // 2 and self.driver.player.current_grid_pos[1] > rows // 2:
-                vec(1,1)
+                vec(1, 1)
             if self.driver.player.current_grid_pos[0] > cols // 2 and self.driver.player.current_grid_pos[1] < rows // 2:
                 return vec(1, rows - 2)
             if self.driver.player.current_grid_pos[0] < cols // 2 and self.driver.player.current_grid_pos[1] > rows // 2:
@@ -67,25 +119,28 @@ class Enemy:
             else:
                 return vec(cols - 2, rows - 2)
 
-       
+    
     def canMove(self):
+        #Set x, y to condense code
         x = int(self.current_pix_pos.x + self.UIClass_obj.margin // 2) % self.driver.cell_width
         y = int(self.current_pix_pos.y + self.UIClass_obj.margin // 2) % self.driver.cell_height
+        
         if  x == 0:
             if self.direction == vec(1, 0) or self.direction == vec(-1, 0) or self.direction == vec(0, 0):
                 return True
         if  y == 0:
             if self.direction == vec(0, 1) or self.direction == vec(0, -1) or self.direction == vec(0, 0):
                 return True
+        #All other cases, return false
         return False
 
     def enemyMove(self):
-        if(self.enemy_bit_state == 0 or self.enemy_bit_state==1 or self.enemy_bit_state==2):
+        if (self.enemy_bit_state == 0 or self.enemy_bit_state == 1 or self.enemy_bit_state == 2):
             self.direction = self.findNextPos(self.player_target)
-        if(self.enemy_bit_state==3):
-            listChoice = [[1,0],[0,1],[-1,0],[0,-1]]
-            randomChoice = random.sample(listChoice,4)
-            self.direction = vec(randomChoice[0],randomChoice[1])
+        if (self.enemy_bit_state == 3):
+            listChoice = [[1, 0], [0, 1], [-1, 0], [0, -1]]
+            randomChoice = random.sample(listChoice, 4)
+            self.direction = vec(randomChoice[0], randomChoice[1])
 
     def setCurrentPixPos(self):
         if self.player_target != self.current_grid_pos:
@@ -96,49 +151,7 @@ class Enemy:
         vec_pos = self.AStarSearchEnemyTarget([int(self.current_grid_pos.x), int(self.current_grid_pos.y)], [int(player_target[0]), int(player_target[1])])[1]
         delta_x = vec_pos[0]-self.current_grid_pos[0] 
         delta_y = vec_pos[1]-self.current_grid_pos[1]
-        return vec(delta_x,delta_y)
-
-    def AStarSearchEnemyTarget(self, start, target):
-        board = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0],
-[0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,1,0],
-[0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,1,0],
-[0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,1,0],
-[0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
-[0,1,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0],
-[0,1,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0],
-[0,1,1,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,1,1,0],
-[0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0],
-[0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0],
-[0,0,0,0,0,0,1,0,0,1,1,1,1,1,1,1,1,1,1,0,0,1,0,0,0,0,0,0],
-[0,0,0,0,0,0,1,0,0,1,0,0,0,1,1,0,0,0,1,0,0,1,0,0,0,0,0,0],
-[0,0,0,0,0,0,1,0,0,1,0,5,1,1,1,1,4,0,1,0,0,1,0,0,0,0,0,0],
-[0,0,0,0,0,0,1,1,1,1,0,1,1,1,1,1,1,0,1,1,1,1,0,0,0,0,0,0],
-[0,0,0,0,0,0,1,0,0,1,0,2,1,1,1,1,3,0,1,0,0,1,0,0,0,0,0,0],
-[0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0],
-[0,0,0,0,0,0,1,0,0,1,1,1,1,1,1,1,1,1,1,0,0,1,0,0,0,0,0,0],
-[0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0],
-[0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0],
-[0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0],
-[0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,1,0],
-[0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,1,0],
-[0,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0],
-[0,0,0,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,1,0,0,0],
-[0,0,0,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,1,0,0,0],
-[0,1,1,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,1,1,0],
-[0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0],
-[0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0],
-[0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
-        #board = [[0 for x in range(28)] for x in range(30)]
-        grid = Grid(matrix=board)
-        begin = grid.node(start[0],start[1])
-        end = grid.node(target[0], target[1])
-        finder = AStarFinder(diagonal_movement=DiagonalMovement.never)
-        path, runs = finder.find_path(begin, end, grid)
-        #print('operations:', runs, 'path length:', len(path))
-        #print(path)
-        return path
+        return vec(delta_x, delta_y)
 
     def pixPos_To_GridPos_X(self):
         self.current_grid_pos[0] = (self.current_pix_pos[0] - self.UIClass_obj.margin + self.driver.cell_width // 2) // self.driver.cell_width + 1
@@ -147,43 +160,15 @@ class Enemy:
         self.current_grid_pos[1] = (self.current_pix_pos[1] - self.UIClass_obj.margin + self.driver.cell_height // 2) // self.driver.cell_height + 1
 
     def updateEnemyState(self):
+        #Get the target
         self.player_target = self.getTarget()
+        #If pre-conditions are correct...
         if self.player_target != self.current_grid_pos:
             self.current_pix_pos += self.direction * self.speed
+            
+            #If can move then do move
             if self.canMove():
                 self.enemyMove()
+        #Get current x, y grid position
         self.pixPos_To_GridPos_X()
         self.pixPos_To_GridPos_Y()
-
-########################################
-# SIMPLE FACTORY BELOW #
-########################################
-
-class BlueEnemy(Enemy):
-    def draw(self):
-        self.UIClass_obj.drawCircle(self.driver.screen, self.UIClass_obj.blue, (int(self.current_pix_pos.x), int(self.current_pix_pos.y)), self.radii)
-
-class OrangeEnemy(Enemy):
-    def draw(self):
-        self.UIClass_obj.drawCircle(self.driver.screen, self.UIClass_obj.orange, (int(self.current_pix_pos.x), int(self.current_pix_pos.y)), self.radii)
-
-class RedEnemy(Enemy):
-    def draw(self):
-        self.UIClass_obj.drawCircle(self.driver.screen, self.UIClass_obj.red, (int(self.current_pix_pos.x), int(self.current_pix_pos.y)), self.radii)
-
-
-class PinkEmemy(Enemy):
-    def draw(self):
-        self.UIClass_obj.drawCircle(self.driver.screen, self.UIClass_obj.pink, (int(self.current_pix_pos.x), int(self.current_pix_pos.y)), self.radii)
-
-class EnemyFactory():
-    def CreateEnemy(self, type, driver, pos, name, bit_state):
-        if (type == "Blue"):
-            return BlueEnemy(driver, pos, name, bit_state)
-        elif (type == "Orange"):
-            return OrangeEnemy(driver, pos, name, bit_state)
-        elif (type == "Red"):
-            return RedEnemy(driver, pos, name, bit_state)
-        elif (type == "Pink"):
-            return PinkEmemy(driver, pos, name, bit_state)
-        #return None

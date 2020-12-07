@@ -96,7 +96,6 @@ class UIClass:
     def updateDisplay(self):
         pygame.display.update()
 
-
     def loadBgImg(self, bg_img):
         return (pygame.image.load(bg_img))
 

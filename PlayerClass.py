@@ -5,10 +5,10 @@
 ########################################
 
 #In creation of this file, REFERENCED:
-    #https://python-patterns.guide/gang-of-four/singleton/
-    #https://www.cse.wustl.edu/~garnett/cse511a/code/project2/pacman_py.html
-    #https://github.com/a-plus-coding/pacman-with-python
-    #http://zetcode.com/javagames/pacman/
+    #https://python-patterns.guide/gang-of-four/singleton/ (Singleton)
+    #https://www.cse.wustl.edu/~garnett/cse511a/code/project2/pacman_py.html (referenced code)
+    #https://github.com/a-plus-coding/pacman-with-python (referenced code)
+    #http://zetcode.com/javagames/pacman/ (referenced code)
 
 ########################################
 # IMPORTS BELOW #
