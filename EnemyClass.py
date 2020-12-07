@@ -1,8 +1,8 @@
+#Utilizes the Simple Factory Design Pattern
+
 ########################################
 # NOTES BELOW #
 ########################################
-
-#Utilizes the Simple Factory Design Pattern
 
 #In creation of this file, REFERENCED:
     #https://pypi.org/project/pathfinding/

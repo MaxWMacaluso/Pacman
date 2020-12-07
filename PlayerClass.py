@@ -1,8 +1,8 @@
+#Utilizes the Singleton Design Pattern
+
 ########################################
 # NOTES BELOW #
 ########################################
-
-#Utilizes the Singleton Design Pattern
 
 #In creation of this file, REFERENCED:
     #https://python-patterns.guide/gang-of-four/singleton/

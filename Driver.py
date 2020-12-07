@@ -1,8 +1,8 @@
+#Utilizes the Observer Design Pattern
+
 ########################################
 # NOTES BELOW #
 ########################################
-
-#Utilizes the Observer Design Pattern
 
 #In creation of this file, REFERENCED:
     #https://www.youtube.com/watch?v=juSH7hmYUGA (timer tutorial)
