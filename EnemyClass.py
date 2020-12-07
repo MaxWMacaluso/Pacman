@@ -138,9 +138,15 @@ class Enemy:
         if (self.enemy_bit_state == 0 or self.enemy_bit_state == 1 or self.enemy_bit_state == 2):
             self.direction = self.findNextPos(self.player_target)
         if (self.enemy_bit_state == 3):
-            listChoice = [[1, 0], [0, 1], [-1, 0], [0, -1]]
-            randomChoice = random.sample(listChoice, 4)
+            while True:
+                listChoice = [[1, 0], [0, 1], [-1, 0], [0, -1]]
+                randomChoice = random.choice(listChoice)
+                #print(randomChoice[0],randomChoice[1])
+                random_step = vec(self.current_grid_pos.x+randomChoice[0],self.current_grid_pos.y+randomChoice[1])
+                if(random_step not in self.driver.walls):
+                    break
             self.direction = vec(randomChoice[0], randomChoice[1])
+            #self.direction = vec(0,0)
 
     def setCurrentPixPos(self):
         if self.player_target != self.current_grid_pos:
