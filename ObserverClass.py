@@ -22,6 +22,17 @@ import pygame
     #This observer will help declare any text during the game such as: Score, Time, Lives, and menus.
 class observerMethod():
 
+    #Static observer_list attribute; saves a list of all observers subscribed
+    observer_list = []
+
+    #Adds an observer to observer_list
+    def registerObserver(self, obs):
+        self.observer_list.append(obs)
+
+    #Removes an observer from observer_list
+    def unregisterObserver(self, obs):
+        self.observer_list.remove(obs)
+
     # Method that will be used declare any actions/changes that occur during the game.
     def observerDisplay(self, words, screen, pos, size, color, font_name, centered=False):
 
