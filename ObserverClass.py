@@ -20,7 +20,7 @@ import pygame
 
 #Notes:
     #This observer will help declare any text during the game such as: Score, Time, Lives, and menus.
-class observerMethod():
+class ObserverClass():
 
     #Static observer_list attribute; saves a list of all observers subscribed
     observer_list = []

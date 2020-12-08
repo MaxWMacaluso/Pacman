@@ -92,6 +92,12 @@ class Enemy:
         #print(path)
         return path
 
+    def findNextPos(self, player_target):
+        vec_pos = self.AStarSearchEnemyTarget([int(self.current_grid_pos.x), int(self.current_grid_pos.y)], [int(player_target[0]), int(player_target[1])])[1]
+        delta_x = vec_pos[0]-self.current_grid_pos[0] 
+        delta_y = vec_pos[1]-self.current_grid_pos[1]
+        return vec(delta_x, delta_y)
+
     #Helper method to return the speed depending on the bit_state        
     def getSpeed(self):
         if self.enemy_bit_state != 1:
@@ -104,17 +110,21 @@ class Enemy:
         #Set these values to condense code
         rows = self.UIClass_obj.rows
         cols = self.UIClass_obj.columns
+        up_x = (self.driver.player.current_grid_pos[0] > cols // 2)
+        up_y = (self.driver.player.current_grid_pos[1] > rows // 2)
+        down_x = (self.driver.player.current_grid_pos[0] < cols // 2)
+        down_y = (self.driver.player.current_grid_pos[1] < rows // 2)
 
         if self.enemy_bit_state == 0:
             return self.driver.player.current_grid_pos
         elif self.enemy_bit_state == 1:
             return self.driver.player.current_grid_pos
         else:
-            if self.driver.player.current_grid_pos[0] > cols // 2 and self.driver.player.current_grid_pos[1] > rows // 2:
-                vec(1, 1)
-            if self.driver.player.current_grid_pos[0] > cols // 2 and self.driver.player.current_grid_pos[1] < rows // 2:
+            if up_x and up_y:
+                return vec(1, 1)
+            if up_x and down_y:
                 return vec(1, rows - 2)
-            if self.driver.player.current_grid_pos[0] < cols // 2 and self.driver.player.current_grid_pos[1] > rows // 2:
+            if down_x and up_y:
                 return vec(cols - 2, 1)
             else:
                 return vec(cols - 2, rows - 2)
@@ -124,12 +134,19 @@ class Enemy:
         #Set x, y to condense code
         x = int(self.current_pix_pos.x + self.UIClass_obj.margin // 2) % self.driver.cell_width
         y = int(self.current_pix_pos.y + self.UIClass_obj.margin // 2) % self.driver.cell_height
+
+        #To condense code
+        right = (self.direction == vec(1, 0))
+        left = (self.direction == vec(-1, 0))
+        none = (self.direction == vec(0, 0))
+        down = (self.direction == vec(0, 1))
+        up = (self.direction == vec(0, -1))
         
         if  x == 0:
-            if self.direction == vec(1, 0) or self.direction == vec(-1, 0) or self.direction == vec(0, 0):
+            if right or left or none:
                 return True
         if  y == 0:
-            if self.direction == vec(0, 1) or self.direction == vec(0, -1) or self.direction == vec(0, 0):
+            if down or up or none:
                 return True
         #All other cases, return false
         return False
@@ -152,12 +169,6 @@ class Enemy:
         if self.player_target != self.current_grid_pos:
             self.current_pix_pos += self.direction * self.speed
             return True
-
-    def findNextPos(self, player_target):
-        vec_pos = self.AStarSearchEnemyTarget([int(self.current_grid_pos.x), int(self.current_grid_pos.y)], [int(player_target[0]), int(player_target[1])])[1]
-        delta_x = vec_pos[0]-self.current_grid_pos[0] 
-        delta_y = vec_pos[1]-self.current_grid_pos[1]
-        return vec(delta_x, delta_y)
 
     def pixPos_To_GridPos_X(self):
         self.current_grid_pos[0] = (self.current_pix_pos[0] - self.UIClass_obj.margin + self.driver.cell_width // 2) // self.driver.cell_width + 1

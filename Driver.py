@@ -1,4 +1,3 @@
-
 #Utilizes the Observer Design Pattern found in ObserverClass.py
 
 ########################################
@@ -248,7 +247,7 @@ class Driver:
         text_size = self.UIClass_obj.start_screen_text_size
 
         # Create the announcing observer
-        announceObserver = observerMethod()
+        announceObserver = ObserverClass()
 
         # Display Our Team Info
         announceObserver.observerDisplay('Pac-Man Recreation', self.screen, [window_width // 2, window_height // 2 - 75], text_size, self.UIClass_obj.blue, font_style, centered = True)
@@ -353,7 +352,7 @@ class Driver:
         self.coinDisplay()
 
         # Create the announcing observer
-        announceObserver = observerMethod()
+        announceObserver = ObserverClass()
 
         # Display the score, time, and lives while the game is being played
         announceObserver.observerDisplay("Lives: " + str(self.numLives), self.screen, [150, 0], self.UIClass_obj.game_text_size, self.UIClass_obj.blue, self.UIClass_obj.start_font_style)
@@ -440,7 +439,7 @@ class Driver:
         window_height = self.UIClass_obj.window_height
 
         # Create the announcing observer
-        announceObserver = observerMethod()
+        announceObserver = ObserverClass()
 
         announceObserver.observerDisplay("GAME OVER", self.screen, [window_width // 2, window_height // 2 - 250],  self.UIClass_obj.end_screen_text_size, self.UIClass_obj.red,  self.UIClass_obj.start_font_style, centered = True)
 

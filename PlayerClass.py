@@ -22,7 +22,7 @@ from UIClass import *
 
 #Notes: 
     #Interesting note, theoretically, a SingletonPlayer instance would have no attributes (essentially null); however, static _instance is what is defined
-    #This is why self.[attributes] does not work
+    #This is why self.[attribute] does not work
 class SingletonPlayer:
     #Static Singleton instance
     _instance = None
@@ -69,8 +69,13 @@ class SingletonPlayer:
 
             #0 current score since 0 coins collected
             cls._instance.current_score = 0
+
         #Return the new instance created (if one was) or return the previously made one
         return cls._instance
+
+    ########################################
+    # 'MAIN' METHODS BELOW #
+    ########################################
 
     #Sort of the driver method for this class, calls many other methods that help the Player instance do important things
     def updatePlayerState(self):
@@ -150,10 +155,14 @@ class SingletonPlayer:
     def alterScore(self, num):
         SingletonPlayer._instance.current_score += num
 
-    #Returns a bool
+    #Returns a bool on whether or not a user is currently on a coin
     def onCoin(self):
         #Purely to condense code
         instanceSingleton = SingletonPlayer._instance
+        down = (instanceSingleton.direction == vec(0, 1))
+        up = (instanceSingleton.direction == vec(0, -1))
+        right = instanceSingleton.direction == vec(1, 0)
+        left = instanceSingleton.direction == vec(-1, 0)
         
         #If on a coin
         if instanceSingleton.current_grid_pos in instanceSingleton.driver.coins:
@@ -161,13 +170,14 @@ class SingletonPlayer:
             #If vertical
             if instanceSingleton.yFun():
                 #If down or up return true
-                if instanceSingleton.direction == vec(0, 1) or instanceSingleton.direction == vec(0, -1):
+                if down or up:
                     return True
             #If horizontal
             if instanceSingleton.xFun():
                 #If right or left return true
-                if instanceSingleton.direction == vec(1, 0) or instanceSingleton.direction == vec(-1, 0):
+                if right or left:
                     return True
+
         #None of the above are true so return False
         return False
 
@@ -206,16 +216,23 @@ class SingletonPlayer:
 
     #Returns a bool
     def timeToMove(self):
+        #To condense code
         instanceSingleton = SingletonPlayer._instance
+        right = (instanceSingleton.direction == vec(1, 0))
+        left = (instanceSingleton.direction == vec(-1, 0))
+        none = (instanceSingleton.direction == vec(0, 0))
+        down = (instanceSingleton.direction == vec(0, 1))
+        up = (instanceSingleton.direction == vec(0, -1))
+
         #Horizontal
         if instanceSingleton.xFun():
             #Right, left, or no direction; return True
-            if instanceSingleton.direction == vec(1, 0) or instanceSingleton.direction == vec(-1, 0) or instanceSingleton.direction == vec(0, 0):
+            if right or left or none:
                 return True
         #Vertical
         if instanceSingleton.yFun():
             #Down, up, or no direction; return True
-            if instanceSingleton.direction == vec(0, 1) or instanceSingleton.direction == vec(0, -1) or instanceSingleton.direction == vec(0, 0):
+            if down or up or none:
                 return True
         #All other cases, return False
         return False
@@ -230,15 +247,17 @@ class SingletonPlayer:
         x = (instanceSingleton.current_grid_pos[0] * instanceSingleton.driver.cell_width) + margin // 2 + instanceSingleton.driver.cell_width // 2
         y = (instanceSingleton.current_grid_pos[1] * instanceSingleton.driver.cell_height) + margin // 2 + instanceSingleton.driver.cell_height // 2
         
-        #Return it
+        #Return value
         return (vec(x, y))
 
     #Uses direction and speed to set current_pix_pos
     def setCurrentPixPos(self):
         #To condense code
         instanceSingleton = SingletonPlayer._instance
+
         #If the Player instance can move
         if instanceSingleton.can_move:
+            
             #Update the current value of pix pos with the vector (direction and magnitude) (non scalar) value
             instanceSingleton.current_pix_pos += instanceSingleton.direction * instanceSingleton.speed
 
