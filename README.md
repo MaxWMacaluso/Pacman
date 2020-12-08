@@ -4,7 +4,7 @@
 * Sahib Bajwa
 
 **Video Link**
-https://drive.google.com/file/d/1whpmhfVobJIVqr-7go7fQrcBmHZz5jbc/view?usp=sharing
+* https://drive.google.com/file/d/1whpmhfVobJIVqr-7go7fQrcBmHZz5jbc/view?usp=sharing
 
 **How to Run**
 1. Ensure you are compiling using Python 3.x
